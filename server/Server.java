@@ -21,6 +21,7 @@ class Server {
 	public void getArgument() {
 		try {
 			Scanner sc = new Scanner(System.in);
+			
 			while(true) {
 				System.out.println("Color of stone(1 : white, 2 : black) : ");
 				color = sc.nextInt();
@@ -34,21 +35,23 @@ class Server {
 					break;
 				}
 			}
-            if(color == 1)
-                clientColor = 2;
-            else 
-                clientColor = 1;
+			
+			if(color == 1)
+				clientColor = 2;
+			else 
+				clientColor = 1;
 			
 			while(true) {
 				System.out.println("Port Number : ");
 				port = sc.nextInt();
 				break;
 			}
+		
 		} catch (InputMismatchException e) {
 			System.out.println(e);
 		}
-		System.out.println("Stone Color : "+color);
-		System.out.println("Port Numver : "+port);
+		System.out.println("Stone Color : " + color);
+		System.out.println("Port Numver : " + port);
 
 		board.setColor(color);
 
@@ -88,10 +91,10 @@ class Server {
     }
 
 	public int byteToInt(byte[] bytes) {
-		return  ((bytes[3] & 0xFF) << 24) | 
-	            ((bytes[2] & 0xFF) << 16) | 
-	            ((bytes[1] & 0xFF) << 8 ) | 
-	            ((bytes[0] & 0xFF) << 0 );
+		return ((bytes[3] & 0xFF) << 24) | 
+			((bytes[2] & 0xFF) << 16) | 
+			((bytes[1] & 0xFF) << 8 ) | 
+			((bytes[0] & 0xFF) << 0 );
 	}
 
 	public byte[] intToByte(int intValue) {
@@ -170,28 +173,27 @@ class Server {
 		return pointArray;
 	}
 
-    public void sendStones(){
-        try {
-            while(board.getCount() != 2) {
-
-            }
-            String stones = board.stoneGenerator();
-            System.out.println("stone Generator() : " + stones);
-            int sizeOfStones = stones.length();
-            outputStream.write(intToByte(sizeOfStones), 0, 4);
-            System.out.println("sizeOfStones : " + sizeOfStones);
-            byte[] bytesOfStones = stones.getBytes();
-            outputStream.write(bytesOfStones);
-            board.setCount(0);
-        } catch (IOException e) {}
-
-    }
+	public void sendStones(){
+		try {
+			while(board.getCount() != 2) {
+			
+			}
+			String stones = board.stoneGenerator();
+			System.out.println("stone Generator() : " + stones);
+			int sizeOfStones = stones.length();
+			outputStream.write(intToByte(sizeOfStones), 0, 4);
+			System.out.println("sizeOfStones : " + sizeOfStones);
+			byte[] bytesOfStones = stones.getBytes();
+			outputStream.write(bytesOfStones);
+			board.setCount(0);
+		} catch (IOException e) {}
+	}
 
 	public void recvStones(){
 		String stones = "";
 		try{
-            byte[] byteOfSize = new byte[4];
-            inputStream.read(byteOfSize, 0, 4);
+			byte[] byteOfSize = new byte[4];
+			inputStream.read(byteOfSize, 0, 4);
 			int sizeOfStones = byteToInt(byteOfSize);
 			byte[] stonesByte = new byte[sizeOfStones];
 			inputStream.read(stonesByte, 0, sizeOfStones);
@@ -205,21 +207,20 @@ class Server {
 
 		for(int i = 0; i< 4; i++){
 			System.out.println(pointArray[i]);
-
 		}
 		for(int i = 0; i < 2; i++){
 			board.updateBoard(pointArray[2 * i], pointArray[2 * i + 1], clientColor); 
 		}
 	}
 
-    public void startAsBlack() {
-        board.setCount(1);
-        board.updateBoard(9, 9, color);
-        board.setPoint(9, 9);
-        board.setCount(2);
-        board.setPoint(9, 9);
-        sendStones();
-    }
+	public void startAsBlack() {
+		board.setCount(1);
+		board.updateBoard(9, 9, color);
+		board.setPoint(9, 9);
+		board.setCount(2);
+		board.setPoint(9, 9);
+		sendStones();
+	}
 
 	public void start(){
 		Scanner sc = new Scanner(System.in);
@@ -236,39 +237,36 @@ class Server {
 			System.err.println("IOException " + e);
 		}
 
-        System.out.println("STONE");		
-		//If Computer is white 
-		if(color == 1){
+		System.out.println("STONE");		
+		if(color == 1){ // server is white
 			System.out.println("SERVER IS WHITE");
-            board.setTurn(0);
-            recvStones();
+			board.setTurn(0);
+			recvStones();
 		}
-		//If player is white
-		else {
-            System.out.println("SERVER IS BLACK");
-            board.setTurn(1);
-            startAsBlack();
-            board.setTurn(0);
-            recvStones();
+		else { // server is black
+			System.out.println("SERVER IS BLACK");
+			board.setTurn(1);
+			startAsBlack();
+			board.setTurn(0);
+			recvStones();
 		}
 
-        while(true) {
-            System.out.println("DRAW AND WAIT");
-            board.setTurn(1); 
-            sendStones();
-            board.setTurn(0);
-            recvStones();
-
-        }
+		while(true) {
+			System.out.println("DRAW AND WAIT");
+			board.setTurn(1); 
+			sendStones();
+			board.setTurn(0);
+			recvStones();
+		}
+        
 	}
 
-	
 	public static void main(String[] args){
 		Server server = new Server();
 		server.getArgument(); 
 		server.connect();		
 		server.sendRedStones();	
-	    server.start();
+		server.start();
 		//server.echo();
 	}
 }
