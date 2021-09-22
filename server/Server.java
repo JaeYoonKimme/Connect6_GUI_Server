@@ -166,6 +166,22 @@ class Server {
 		return pointArray;
 	}
 
+    public void sendStones(){
+        while( board.getCount() != 2 ){
+        }
+        try {
+            String stones = board.stoneGenerator();
+            System.out.println("stone Generator() : " + stones);
+            int sizeOfStones = stones.length();
+            outputStream.write(sizeOfStones);
+            System.out.println("sizeOfStones : " + sizeOfStones);
+            byte[] bytesOfStones = stones.getBytes();
+            outputStream.write(bytesOfStones);
+        } catch (IOException e) {}
+
+        board.setCount(0);
+    }
+
 	public void recvStones(){
 		String stones = "";
 		try{
@@ -189,6 +205,15 @@ class Server {
 		}
 	}
 
+    public void startAsBlack() {
+        board.setCount(1);
+        board.updateBoard(9, 9, color);
+        board.setPoint(9, 9);
+        board.setCount(2);
+        board.setPoint(9, 9);
+        sendStones();
+    }
+
 	public void start(){
 		Scanner sc = new Scanner(System.in);
 		try {
@@ -204,16 +229,35 @@ class Server {
 			System.err.println("IOException " + e);
 		}
 
-		
+        System.out.println("STONE");		
 		//If Computer is white 
 		if(color == 1){
-			//board.getstones(10,10);
+			System.out.println("SERVER IS WHITE");
+            //board.getstones(10,10);
 			//k10에돌놓기
+            board.setTurn(0);
+            recvStones();
+            board.setTurn(1);
+            sendStones();
+            board.setTurn(0);
+            recvStones();
 		}
 		//If player is white
 		else {
-		
+            System.out.println("SERVER IS BLACK");
+            board.setTurn(1);
+            startAsBlack();
+            board.setTurn(0);
+            recvStones();
 		}
+
+        while(true) {
+            board.setTurn(1); 
+            sendStones();
+            board.setTurn(0);
+            recvStones();
+
+        }
 	}
 	
 	public static void main(String[] args){
@@ -221,10 +265,10 @@ class Server {
 		server.getArgument(); 
 		server.connect();		
 		server.sendRedStones();	
-		while(true){
-			server.recvStones();
-		}
-			//server.start();
+		//while(true){
+		//	server.recvStones();
+		//}
+	    server.start();
 		//server.echo();
 
 

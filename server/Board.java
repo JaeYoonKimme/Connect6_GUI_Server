@@ -17,12 +17,14 @@ import javax.swing.JPanel;
 class Board extends JFrame implements ActionListener, MouseListener{
 	private int[][] board = new int[19][19];
 	private String redStones ; 
-	private int color;
+	private int color, turn, count;
 
 	private int[] xd = {0,1,-1,1};
 	private int[] yd = {1,0,1,1};
 
-	Board(){
+    private int[] point = {0, 0, 0, 0};
+	
+    Board(){
 		super();
 		for(int i = 0; i < 19; i++){
 			for(int j = 0; j < 19; j++){
@@ -38,7 +40,7 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		add(p);
 		addMouseListener(this);
 		super.setVisible(true);
-
+        count = 0;
 		redStoneGenerater();
 	}
 
@@ -51,7 +53,7 @@ class Board extends JFrame implements ActionListener, MouseListener{
 			String num=String.valueOf(20 - i);
 			g.drawString(num,0, 15 + 30 * (i));
 			
-			char alphabet = '\0';
+			char alphabet = '0';
 			if(i < 9){
 				alphabet = (char)(i+64);
 			}
@@ -90,15 +92,29 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		}
 	}
 
+    public void setPoint(int x, int y) {
+        point[(count - 1) * 2] = x;
+        point[(count-1) *2 + 1] = y;
+    }
+
+    public boolean myTurn(){
+        if (turn == 1)
+            return true;
+        else 
+            return false;
+    }
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		int x= (e.getX() - 15)/30;
 		int y = (e.getY() - 30)/30;
 
-		if (checkValid(x,y) == false) { 
+       
+		if (checkValid(x,y) == false || myTurn() == false) { 
 			return ;
 		}
 		
+        count = count + 1; 
+        setPoint(x, y);
 		board[y][x] = color;
 		repaint();
 
@@ -190,6 +206,41 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	public void setColor(int color){
 		this.color = color;	
 	}
+
+    public void setTurn(int turn){
+        this.turn = turn;
+    }
+
+    public void setCount(int count){
+        this.count = count;
+    }
+
+    public int getCount() {
+        return this.count;
+    }
+
+    public String stoneGenerator() {
+        String stones = "";
+        int number = 0 ;
+        char alphabet = 0;
+
+        for( int i = 0 ; i < 2 ; i++ ){
+            if( point[2*i] < 8 ){
+                alphabet = (char) (point[2*i] + 65);        
+            } else {
+                alphabet = (char) (point[2*i] + 66);
+            }
+
+            number = point[2*i+1] + 1;
+            stones = stones + String.valueOf(alphabet);
+            stones = stones + Integer.toString(number);
+            if( i == 0 ) 
+                stones = stones + ":";
+
+        }
+        System.out.println("stone generator: "+ stones);
+        return stones;
+    }
 
 	private void redStoneGenerater(){
 		int x, y, storedX, storedY;
