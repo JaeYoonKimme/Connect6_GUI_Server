@@ -83,7 +83,7 @@ class Server {
 		int sizeOfRedStones = redStones.length();
 
 		try {
-			outputStream.write(sizeOfRedStones);
+			outputStream.write(intToByte(sizeOfRedStones), 0, 4);
 			outputStream.write(redStones.getBytes(), 0, sizeOfRedStones);
 		} catch (IOException e) {
 			System.err.println("Send redStone" + e);
