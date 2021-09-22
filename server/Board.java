@@ -17,13 +17,14 @@ import javax.swing.JPanel;
 class Board extends JFrame implements ActionListener, MouseListener{
 	private int[][] board = new int[19][19];
 	private String redStones ; 
-	private int color, turn;
+	private int color; 
+	private volatile int turn;
 	private volatile int count;
 	
 	private int[] xd = {0,1,-1,1};
 	private int[] yd = {1,0,1,1};
 	
-	private int[] point = {0, 0, 0, 0};
+	private volatile  int[] point = {0, 0, 0, 0};
 	
 	Board(){
 		super();
@@ -95,8 +96,10 @@ class Board extends JFrame implements ActionListener, MouseListener{
 
 	public void setPoint(int x, int y) {
 		System.out.println("count " + count);
-		point[(count - 1) * 2] = x;
-		point[(count-1) *2 + 1] = y;
+		point[(count) * 2] = x;
+		point[(count) *2 + 1] = y;
+		System.out.println(point[(count) * 2]);
+		System.out.println(point[(count) *2 + 1]);
 	}
 	
 	public boolean myTurn(){
@@ -115,9 +118,10 @@ class Board extends JFrame implements ActionListener, MouseListener{
 			return ;
 		}
 		
-		count = count + 1; 
-		setPoint(x, y);
+		setPoint(x, 18 - y);
 		board[y][x] = color;
+		
+		count = count + 1; 
 		repaint();
 
 		if (checkWin(x, y) == true){
@@ -234,7 +238,11 @@ class Board extends JFrame implements ActionListener, MouseListener{
 			}
 			
 			number = point[2*i+1] + 1;
+			
 			stones = stones + String.valueOf(alphabet);
+			if(number < 10){
+				stones = stones + "0";
+			}
 			stones = stones + Integer.toString(number);
 			if( i == 0 ) 
 				stones = stones + ":";
