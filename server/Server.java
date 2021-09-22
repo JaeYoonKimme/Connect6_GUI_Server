@@ -8,7 +8,7 @@ import javax.swing.* ;
 import java.awt.Graphics ;
 
 class Server {
-	private int color, port;
+	private int color, clientColor, port;
 	private Socket socket;
 	private InputStream inputStream;
 	private OutputStream outputStream;
@@ -34,6 +34,10 @@ class Server {
 					break;
 				}
 			}
+            if(color == 1)
+                clientColor = 2;
+            else 
+                clientColor = 1;
 			
 			while(true) {
 				System.out.println("Port Number : ");
@@ -84,18 +88,18 @@ class Server {
     }
 
 	public int byteToInt(byte[] bytes) {
-		return ((bytes[0] & 0xFF) << 24) | 
-	            ((bytes[1] & 0xFF) << 16) | 
-	            ((bytes[2] & 0xFF) << 8 ) | 
-	            ((bytes[3] & 0xFF) << 0 );
+		return  ((bytes[3] & 0xFF) << 24) | 
+	            ((bytes[2] & 0xFF) << 16) | 
+	            ((bytes[1] & 0xFF) << 8 ) | 
+	            ((bytes[0] & 0xFF) << 0 );
 	}
 
 	public byte[] intToByte(int intValue) {
 		byte[] byteArray = new byte[4];
-		byteArray[0] = (byte)(intValue >> 24);
-		byteArray[1] = (byte)(intValue >> 16);
-		byteArray[2] = (byte)(intValue >> 8);
-		byteArray[3] = (byte)(intValue);
+		byteArray[3] = (byte)(intValue >> 24);
+		byteArray[2] = (byte)(intValue >> 16);
+		byteArray[1] = (byte)(intValue >> 8);
+		byteArray[0] = (byte)(intValue);
 		return byteArray;
 	}
 
@@ -167,25 +171,28 @@ class Server {
 	}
 
     public void sendStones(){
-        while( board.getCount() != 2 ){
-        }
         try {
+            while(board.getCount() != 2) {
+
+            }
             String stones = board.stoneGenerator();
             System.out.println("stone Generator() : " + stones);
             int sizeOfStones = stones.length();
-            outputStream.write(sizeOfStones);
+            outputStream.write(intToByte(sizeOfStones), 0, 4);
             System.out.println("sizeOfStones : " + sizeOfStones);
             byte[] bytesOfStones = stones.getBytes();
             outputStream.write(bytesOfStones);
+            board.setCount(0);
         } catch (IOException e) {}
 
-        board.setCount(0);
     }
 
 	public void recvStones(){
 		String stones = "";
 		try{
-			int sizeOfStones = inputStream.read();
+            byte[] byteOfSize = new byte[4];
+            inputStream.read(byteOfSize, 0, 4);
+			int sizeOfStones = byteToInt(byteOfSize);
 			byte[] stonesByte = new byte[sizeOfStones];
 			inputStream.read(stonesByte, 0, sizeOfStones);
 			stones = new String(stonesByte);
@@ -201,7 +208,7 @@ class Server {
 
 		}
 		for(int i = 0; i < 2; i++){
-			board.updateBoard(pointArray[2 * i], pointArray[2 * i + 1], 1); 
+			board.updateBoard(pointArray[2 * i], pointArray[2 * i + 1], clientColor); 
 		}
 	}
 
@@ -233,12 +240,6 @@ class Server {
 		//If Computer is white 
 		if(color == 1){
 			System.out.println("SERVER IS WHITE");
-            //board.getstones(10,10);
-			//k10에돌놓기
-            board.setTurn(0);
-            recvStones();
-            board.setTurn(1);
-            sendStones();
             board.setTurn(0);
             recvStones();
 		}
@@ -252,6 +253,7 @@ class Server {
 		}
 
         while(true) {
+            System.out.println("DRAW AND WAIT");
             board.setTurn(1); 
             sendStones();
             board.setTurn(0);
@@ -259,18 +261,14 @@ class Server {
 
         }
 	}
+
 	
 	public static void main(String[] args){
 		Server server = new Server();
 		server.getArgument(); 
 		server.connect();		
 		server.sendRedStones();	
-		//while(true){
-		//	server.recvStones();
-		//}
 	    server.start();
 		//server.echo();
-
-
 	}
 }

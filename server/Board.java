@@ -17,7 +17,8 @@ import javax.swing.JPanel;
 class Board extends JFrame implements ActionListener, MouseListener{
 	private int[][] board = new int[19][19];
 	private String redStones ; 
-	private int color, turn, count;
+	private int color, turn;
+    private volatile int count;
 
 	private int[] xd = {0,1,-1,1};
 	private int[] yd = {1,0,1,1};
@@ -93,6 +94,7 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	}
 
     public void setPoint(int x, int y) {
+        System.out.println("count " + count);
         point[(count - 1) * 2] = x;
         point[(count-1) *2 + 1] = y;
     }
@@ -100,10 +102,11 @@ class Board extends JFrame implements ActionListener, MouseListener{
     public boolean myTurn(){
         if (turn == 1)
             return true;
-        else 
+        else
             return false;
     }
-	@Override
+	
+    @Override
 	public void mouseClicked(MouseEvent e) {
 		int x= (e.getX() - 15)/30;
 		int y = (e.getY() - 30)/30;
