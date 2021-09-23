@@ -26,8 +26,9 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	
 	private volatile  int[] point = {0, 0, 0, 0};
 
-    private Button startButton;
-    private volatile int gameStart;
+	private Button startButton;
+	private volatile int gameStart;
+	
 	Board(){
 		super();
 		for(int i = 0; i < 19; i++){
@@ -36,12 +37,12 @@ class Board extends JFrame implements ActionListener, MouseListener{
 			}
 		}
 
-        startButton = new Button("start");
-        startButton.addActionListener(new ActionListener() {
-            public void actionPerformed ( ActionEvent e ) {
-                gameStart = 1;
-            }
-        });
+		startButton = new Button("start");
+		startButton.addActionListener(new ActionListener() {
+		    public void actionPerformed ( ActionEvent e ) {
+			gameStart = 1;
+		    }
+		});
 
 		super.setLayout(new FlowLayout());
 		setBounds(100,100,600,600);
@@ -49,21 +50,21 @@ class Board extends JFrame implements ActionListener, MouseListener{
 
 		p.setSize(600,600);
 		add(startButton);
-        add(p);
+        	add(p);
 
 		addMouseListener(this);
 		super.setVisible(true);
-        count = 0;
+        	count = 0;
 		redStoneGenerater();
 	}
 
-    public int getGameStart(){
-        return gameStart;
-    }
+    	public int getGameStart(){
+        	return gameStart;
+    	}
 
-    public void disableButton(){
-        startButton.setEnabled(false);
-    }
+    	public void disableButton(){
+        	startButton.setEnabled(false);
+    	}
 
 	public void paint(Graphics g0) {
 		Graphics2D g= (Graphics2D)g0;
@@ -132,10 +133,10 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		setPoint(x, 18 - y);
 		board[y][x] = color;
 		
-        if( x == 9 && y == 9 ){ // start as black
-            count = 2;
-        } else
-            count = count + 1; 
+        	if( x == 9 && y == 9 ){ // start as black
+           		count = 2;
+        	} else
+            		count = count + 1; 
 
 		repaint();
 
@@ -223,10 +224,10 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		}
 		board[18 - y][x] = color;
 		repaint();
-        if(checkWin(x, 18 - y) == true) {
-            System.out.println("Client Win! Game end");
-            return;
-        }
+        	if(checkWin(x, 18 - y) == true) {
+            		System.out.println("Client Win! Game end");
+            		return;
+        	}
 	}
 
 	public void setColor(int color){
@@ -250,10 +251,10 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		int number = 0 ;
 		char alphabet = 0;
 		
-        if(point[0] == 9 && point[1] == 9){
-            stones = "K10";
-            return stones;
-        }
+        	if(point[0] == 9 && point[1] == 9){
+            		stones = "K10";
+            		return stones;
+        	}
 
 		for( int i = 0 ; i < 2 ; i++ ){
 			if( point[2*i] < 8 ){
