@@ -88,7 +88,7 @@ class Server {
 		} catch (IOException e) {
 			System.err.println("Send redStone" + e);
 		}
-    }
+    	}
 
 	public int byteToInt(byte[] bytes) {
 		return ((bytes[3] & 0xFF) << 24) | 
@@ -203,10 +203,10 @@ class Server {
 			System.err.println("Recv Stone" + e);
 		}
         
-        if(stones.equals("K10")){
-            board.updateBoard(9, 9, clientColor);
-            return;
-        }
+		if(stones.equals("K10")){
+		    board.updateBoard(9, 9, clientColor);
+		    return;
+		}
 
 		int[] pointArray = parseString(stones);
 
@@ -237,12 +237,12 @@ class Server {
 		}
         */
 
-        while(true){
-            if(board.getGameStart() == 1) 
-                break;
-        }
+		while(true){
+		    if(board.getGameStart() == 1) 
+			break;
+		}
 
-        board.disableButton();
+        	board.disableButton();
 		System.out.println("STONE");		
 		if(color == 1){ // server is white
 			System.out.println("SERVER IS WHITE");
@@ -253,7 +253,7 @@ class Server {
 			System.out.println("SERVER IS BLACK");
 			board.setTurn(1);
 			sendStones();
-            board.setTurn(0);
+            		board.setTurn(0);
 			recvStones();
 		}
 
