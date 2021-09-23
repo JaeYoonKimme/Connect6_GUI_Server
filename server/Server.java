@@ -214,11 +214,11 @@ class Server {
 	}
 
 	public void startAsBlack() {
-		board.setCount(1);
 		board.updateBoard(9, 9, color);
 		board.setPoint(9, 9);
-		board.setCount(2);
+		board.setCount(1);
 		board.setPoint(9, 9);
+		board.setCount(2);
 		sendStones();
 	}
 

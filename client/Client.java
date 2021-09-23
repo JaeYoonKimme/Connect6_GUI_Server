@@ -22,7 +22,9 @@ public class Client {
     
     public void recvRedStones(){
         try{
-            int sizeOfRedStones = inputStream.read();
+			byte[] int_byte = new byte[4];
+            inputStream.read(int_byte, 0, 4);
+			int sizeOfRedStones = byteToInt(int_byte);
             byte[] str_byte = new byte[sizeOfRedStones];
             inputStream.read(str_byte, 0, sizeOfRedStones);
             String redinfo = new String(str_byte);
@@ -107,17 +109,17 @@ public class Client {
         
         if(color == 2) { // black
             System.out.println("Client is BLACK");
-            c.sendStones();
-            c.recvStones();
+            sendStones();
+            recvStones();
         } else {
             System.out.println("Client is WHITE");
-            c.recvStones();
+            recvStones();
         }
         
         while(true){
             System.out.println("DRAW AND WAIT");
-            c.sendStones();
-            c.recvStones();
+            sendStones();
+            recvStones();
         }
     }
 
