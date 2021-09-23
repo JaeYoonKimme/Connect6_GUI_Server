@@ -8,6 +8,8 @@ public class Client {
     private InputStream inputStream;
     private OutputStream outputStream;
     public void init(int color, int port){
+        this.color = color;
+
         try {
             Socket socket = new Socket("localhost", port);
             socket.setTcpNoDelay(true);
@@ -108,10 +110,12 @@ public class Client {
     public void start() {
         
         if(color == 2) { // black
+            System.out.println("color:" + color);
             System.out.println("Client is BLACK");
             sendStones();
             recvStones();
         } else {
+            System.out.println("color:" + color);
             System.out.println("Client is WHITE");
             recvStones();
         }
@@ -128,6 +132,7 @@ public class Client {
         Client c = new Client();
         Scanner sc = new Scanner(System.in);
         int color = sc.nextInt();
+        System.out.println("color:" + color);
         int port = sc.nextInt();
         c.init(color, port);
         c.recvRedStones();

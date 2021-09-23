@@ -25,7 +25,9 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	private int[] yd = {1,0,1,1};
 	
 	private volatile  int[] point = {0, 0, 0, 0};
-	
+
+    private Button startButton;
+    private volatile int gameStart;
 	Board(){
 		super();
 		for(int i = 0; i < 19; i++){
@@ -34,18 +36,34 @@ class Board extends JFrame implements ActionListener, MouseListener{
 			}
 		}
 
+        startButton = new Button("start");
+        startButton.addActionListener(new ActionListener() {
+            public void actionPerformed ( ActionEvent e ) {
+                gameStart = 1;
+            }
+        });
+
 		super.setLayout(new FlowLayout());
 		setBounds(100,100,600,600);
 		JPanel p = new JPanel();
 
 		p.setSize(600,600);
-		add(p);
+		add(startButton);
+        add(p);
+
 		addMouseListener(this);
 		super.setVisible(true);
-        	count = 0;
+        count = 0;
 		redStoneGenerater();
 	}
 
+    public int getGameStart(){
+        return gameStart;
+    }
+
+    public void disableButton(){
+        startButton.setEnabled(false);
+    }
 
 	public void paint(Graphics g0) {
 		Graphics2D g= (Graphics2D)g0;
@@ -102,30 +120,30 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		System.out.println(point[(count) *2 + 1]);
 	}
 	
-	public boolean myTurn(){
-		if (turn == 1)
-			return true;
-		else
-			return false;
-	}
-	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		int x = (e.getX() - 15)/30;
 		int y = (e.getY() - 30)/30;
-       
-		if (checkValid(x,y) == false || myTurn() == false) { 
+        
+		if (checkValid(x,y) == false || turn == 0 ) { 
 			return ;
 		}
-		
+
 		setPoint(x, 18 - y);
 		board[y][x] = color;
 		
-		count = count + 1; 
+        if( x == 9 && y == 9 ){ // start as black
+            count = 1;
+            setPoint(x, 18 - y);
+            count = 2;
+        } else
+            count = count + 1; 
+
 		repaint();
 
 		if (checkWin(x, y) == true){
-			System.out.println("Game end");
+			System.out.println("Server Win! Game end");
+
 		}
 	}
 
@@ -155,7 +173,7 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		if(y < 0 && y > 18){
 			return false;
 		}
-		if(board[y][x] != 0){
+		if(board[18 - y][x] != 0){
 			return false;
 		}
 		return true;
@@ -207,6 +225,10 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		}
 		board[18 - y][x] = color;
 		repaint();
+        if(checkWin(x, y) == true) {
+            System.out.println("Client Win! Game end");
+            return;
+        }
 	}
 
 	public void setColor(int color){

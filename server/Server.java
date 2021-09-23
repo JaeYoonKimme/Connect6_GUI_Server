@@ -213,16 +213,10 @@ class Server {
 		}
 	}
 
-	public void startAsBlack() {
-		board.updateBoard(9, 9, color);
-		board.setPoint(9, 9);
-		board.setCount(1);
-		board.setPoint(9, 9);
-		board.setCount(2);
-		sendStones();
-	}
-
 	public void start(){
+
+
+        /*
 		Scanner sc = new Scanner(System.in);
 		try {
 			System.out.println("Enter start");
@@ -236,7 +230,14 @@ class Server {
 		} catch (Exception e){
 			System.err.println("IOException " + e);
 		}
+        */
 
+        while(true){
+            if(board.getGameStart() == 1) 
+                break;
+        }
+
+        board.disableButton();
 		System.out.println("STONE");		
 		if(color == 1){ // server is white
 			System.out.println("SERVER IS WHITE");
@@ -246,8 +247,8 @@ class Server {
 		else { // server is black
 			System.out.println("SERVER IS BLACK");
 			board.setTurn(1);
-			startAsBlack();
-			board.setTurn(0);
+			sendStones();
+            board.setTurn(0);
 			recvStones();
 		}
 
