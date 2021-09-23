@@ -153,7 +153,7 @@ class Server {
 		secondPoint = stones.substring(end+1);
 		System.out.println(secondPoint);
 		firstAlphabet = firstPoint.charAt(0);
-		if(firstAlphabet - 65 >9){
+		if(firstAlphabet - 65 > 9){
 			pointArray[0] = firstAlphabet - 66;
 		}
 		else{
@@ -161,7 +161,7 @@ class Server {
 		}
 		pointArray[1] = Integer.parseInt(firstPoint.substring(1))-1;
 		secondAlphabet = secondPoint.charAt(0);
-		if(secondAlphabet - 65 >9){
+		if(secondAlphabet - 65 > 9){
 			pointArray[2] = secondAlphabet - 66;
 		}
 		else{
@@ -202,6 +202,11 @@ class Server {
 		} catch (IOException e) {
 			System.err.println("Recv Stone" + e);
 		}
+        
+        if(stones.equals("K10")){
+            board.updateBoard(9, 9, clientColor);
+            return;
+        }
 
 		int[] pointArray = parseString(stones);
 

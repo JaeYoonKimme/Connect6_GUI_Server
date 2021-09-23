@@ -133,8 +133,6 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		board[y][x] = color;
 		
         if( x == 9 && y == 9 ){ // start as black
-            count = 1;
-            setPoint(x, 18 - y);
             count = 2;
         } else
             count = count + 1; 
@@ -225,7 +223,7 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		}
 		board[18 - y][x] = color;
 		repaint();
-        if(checkWin(x, y) == true) {
+        if(checkWin(x, 18 - y) == true) {
             System.out.println("Client Win! Game end");
             return;
         }
@@ -252,6 +250,11 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		int number = 0 ;
 		char alphabet = 0;
 		
+        if(point[0] == 9 && point[1] == 9){
+            stones = "K10";
+            return stones;
+        }
+
 		for( int i = 0 ; i < 2 ; i++ ){
 			if( point[2*i] < 8 ){
 				alphabet = (char) (point[2*i] + 65);        
