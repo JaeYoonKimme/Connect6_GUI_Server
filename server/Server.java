@@ -132,8 +132,11 @@ class Server {
 
 	public void sendStones(){
 		try {
-			while(board.getCount() != 2) {
-			
+			while(board.getCount() != 2) {	
+				if(board.getGameEnd() == 1){
+					while(true){
+					}
+				}
 			}
 			String stones = board.stoneGenerator();
 			System.out.println("stone Generator() : " + stones);
@@ -176,6 +179,11 @@ class Server {
 		for(int i = 0; i < 2; i++){
 			board.updateBoard(pointArray[2 * i], pointArray[2 * i + 1], clientColor); 
 		}
+
+		if(board.getGameEnd() == 1){
+			while(true){
+			}
+		}
 	}
 
 	public void start(){
@@ -199,7 +207,6 @@ class Server {
 			board.setTurn(1);
 			sendStones();
             board.setTurn(0);
-
 			board.printLog("TURN : CLIENT");
 			recvStones();
 		}
@@ -207,7 +214,7 @@ class Server {
 		while(true) {
 			System.out.println("DRAW AND WAIT");
 			board.printLog("TURN : SERVER");
-			board.setTurn(1); 
+			board.setTurn(1);
 			sendStones();
 			board.setTurn(0);
 			board.printLog("TURN : CLIENT");
