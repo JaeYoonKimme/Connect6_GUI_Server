@@ -190,21 +190,27 @@ class Server {
 		if(color == 1){ // server is white
 			System.out.println("SERVER IS WHITE");
 			board.setTurn(0);
+			board.printLog("TURN : CLIENT");
 			recvStones();
 		}
 		else { // server is black
 			System.out.println("SERVER IS BLACK");
+			board.printLog("TURN : SERVER");
 			board.setTurn(1);
 			sendStones();
-            		board.setTurn(0);
+            board.setTurn(0);
+
+			board.printLog("TURN : CLIENT");
 			recvStones();
 		}
 
 		while(true) {
 			System.out.println("DRAW AND WAIT");
+			board.printLog("TURN : SERVER");
 			board.setTurn(1); 
 			sendStones();
 			board.setTurn(0);
+			board.printLog("TURN : CLIENT");
 			recvStones();
 		}
         

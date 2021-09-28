@@ -23,11 +23,13 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	private int port;
 	private volatile int turn;
 	private volatile int count;
-	
+	private int highlight = 0;
+
 	private int[] xd = {0,1,-1,1};
 	private int[] yd = {1,0,1,1};
 	
-	private volatile  int[] point = {0, 0, 0, 0};
+
+	private volatile  int[] point = {-1, -1, -1, -1};
 
 	private Button startButton;
 	private Button settingButton;
@@ -37,7 +39,8 @@ class Board extends JFrame implements ActionListener, MouseListener{
 
 	private volatile int gameStart = 0;
 	private volatile int settingDone = 0;
-	
+	private int gameEnd = 0;
+
 	Board(){
 		super();
 
@@ -202,22 +205,40 @@ class Board extends JFrame implements ActionListener, MouseListener{
 				}
 			}
 		}
+
+		g.setStroke(new BasicStroke(2));
+		for(int i = 0; i < highlight; i++){
+			g.setColor(new Color(255,0,0));
+			g.drawOval(point[i * 2] * 30 + 20,(18 - point[i * 2 + 1]) * 30 + 30, 20, 20);
+			if(point[i * 2] == 9 && point[i * 2 + 1] == 9)
+			{
+				break;
+			}
+		}
+		if(highlight == 2)
+		{
+			highlight = 0;
+		}
 	}
 
 	public void setPoint(int x, int y) {
-		System.out.println("count " + count);
-		point[(count) * 2] = x;
-		point[(count) *2 + 1] = y;
+		System.out.println("highlight" + highlight);
+		point[(highlight) * 2] = x;
+		point[(highlight) *2 + 1] = y;
 		System.out.println(point[(count) * 2]);
 		System.out.println(point[(count) *2 + 1]);
 	}
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		if(gameEnd == 1) {
+			return ;
+		}
+
 		int x = (e.getX() - 15)/30;
 		int y = (e.getY() - 30)/30; 
 		System.out.println("X: "+x+" Y: "+y);
-		if (checkValid(x,y) == false || turn == 0 ) { 
+		if (checkValid(x,y) == false || turn != 1) { 
 			return ;
 		}
 
@@ -226,14 +247,16 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		
         	if( x == 9 && y == 9 ){ // start as black
            		count = 2;
-        	} else
-            		count = count + 1; 
+				highlight = 2;
+        	} else{
+            	count = count + 1;
+				highlight = highlight + 1;
+			}
 
 		repaint();
-
+		
 		if (checkWin(x, y) == true){
-			System.out.println("Server Win! Game end");
-
+			printLog("Server Win! Game end");
 		}
 	}
 
@@ -275,6 +298,7 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		for(int i = 0; i < 4; i++) {
 			isWin[i] = search(xd[i], yd[i], x, y);
 			if(isWin[i] == 6) {
+				gameEnd = 1;
 				return true ;
 			}
 		}
@@ -309,16 +333,28 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	}
 
 	public void updateBoard(int x, int y, int color){
+		if(gameEnd == 1) {
+			return ;
+		}
+
 		if(checkValid(x, y) == false) {
 			System.out.println("Wrong input");
 			return ;
 		}
+		setPoint(x, y);
+		if( x == 9 && 18- y == 9 ){ // start as black
+			highlight = 2;
+        	} else {
+			highlight = highlight + 1;
+		}
 		board[18 - y][x] = color;
-		repaint();
-        	if(checkWin(x, 18 - y) == true) {
-            		System.out.println("Client Win! Game end");
-            		return;
-        	}
+		if(highlight == 2) {
+			repaint();
+    	}
+		if(checkWin(x, 18 - y) == true) {
+			printLog("Client Win! Game end");
+			return;
+		}
 	}
 
 	public void setColor(int color){
