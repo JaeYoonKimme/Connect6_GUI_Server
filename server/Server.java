@@ -19,37 +19,10 @@ class Server {
 	}
 
 	public void getArgument() {
-		try {
-			Scanner sc = new Scanner(System.in);
 			
-			while(true) {
-				System.out.println("Color of stone(1 : white, 2 : black) : ");
-				color = sc.nextInt();
-			
-				if (!(color == 1 || color == 2)){
-					System.out.println("Wrong Color of Stone");
-					sc.nextLine();
-					continue;
-				}
-				else {
-					break;
-				}
-			}
-			
-			if(color == 1)
-				clientColor = 2;
-			else 
-				clientColor = 1;
-			
-			while(true) {
-				System.out.println("Port Number : ");
-				port = sc.nextInt();
-				break;
-			}
-		
-		} catch (InputMismatchException e) {
-			System.out.println(e);
-		}
+
+
+
 		System.out.println("Stone Color : " + color);
 		System.out.println("Port Numver : " + port);
 
@@ -219,30 +192,13 @@ class Server {
 	}
 
 	public void start(){
-
-
-        /*
-		Scanner sc = new Scanner(System.in);
-		try {
-			System.out.println("Enter start");
-			while(true){
-				String startMessage = sc.nextLine();
-				if(startMessage.equals("start")){
-					System.out.println("Connect6 Start");
-					break;
-				}
-			}
-		} catch (Exception e){
-			System.err.println("IOException " + e);
-		}
-        */
-
 		while(true){
 		    if(board.getGameStart() == 1) 
 			break;
 		}
 
-        	board.disableButton();
+        board.disableStartButton();
+
 		System.out.println("STONE");		
 		if(color == 1){ // server is white
 			System.out.println("SERVER IS WHITE");

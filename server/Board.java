@@ -27,44 +27,101 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	private volatile  int[] point = {0, 0, 0, 0};
 
 	private Button startButton;
-	private volatile int gameStart;
+	private Button settingButton;
+	private JTextArea logTextArea;
+	private JTextField portField;
+	private JComboBox<String> colorBox;
+
+	private volatile int gameStart = 0;
+	private volatile int settingDone = 0;
 	
 	Board(){
 		super();
+
 		for(int i = 0; i < 19; i++){
 			for(int j = 0; j < 19; j++){
 				board[i][j] = 0;
 			}
 		}
+		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLayout(new GridLayout(1,2));
+		setSize(1400,630);
+		setTitle("Connect 6");
 
-		startButton = new Button("start");
-		startButton.addActionListener(new ActionListener() {
-		    public void actionPerformed ( ActionEvent e ) {
-			gameStart = 1;
-		    }
+
+		JPanel leftPanel = new JPanel();
+		leftPanel.setSize(600,600);
+		
+		JPanel rightPanel = new JPanel();
+		rightPanel.setSize(800,600);
+		rightPanel.setLayout(new FlowLayout());
+
+
+		JLabel portLabel = new JLabel("Select Port Number : ");
+		portField = new JTextField("8080");
+
+		JLabel colorLabel = new JLabel("Select Server's Color : ");
+		colorBox = new JComboBox<>(new String[] {"BLACK","WHITE"});
+
+		logTextArea = new JTextArea("*********************** Log History ***********************", 30, 30);
+		logTextArea.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(logTextArea);
+
+		settingButton = new Button("OPEN SERVER");
+		settingButton.addActionListener(new ActionListener() {
+			public void actionPerformed ( ActionEvent e ) {
+				int port = Integer.parseInt(portField.getText());
+				logTextArea.append("port : " + port);
+				settingDone = 1;
+			}
 		});
 
-		super.setLayout(new FlowLayout());
-		setBounds(100,100,600,600);
-		JPanel p = new JPanel();
+		startButton = new Button("START");
+		startButton.addActionListener(new ActionListener() {
+		    public void actionPerformed ( ActionEvent e ) {
+				gameStart = 1;
+		    }
+		});
+		startButton.setSize(50,50);
 
-		p.setSize(600,600);
-		add(startButton);
-        	add(p);
 
+		rightPanel.add(portLabel);
+		rightPanel.add(portField);
+		rightPanel.add(colorLabel);
+		rightPanel.add(colorBox);
+		rightPanel.add(settingButton);
+		rightPanel.add(startButton);
+		rightPanel.add(scrollPane);	
+
+		this.add(leftPanel);
+		this.add(rightPanel);
+		setVisible(true);
+		
 		addMouseListener(this);
-		super.setVisible(true);
-        	count = 0;
+        count = 0;
 		redStoneGenerater();
 	}
 
-    	public int getGameStart(){
-        	return gameStart;
-    	}
+    public int getGameStart(){
+        return gameStart;
+    }
 
-    	public void disableButton(){
-        	startButton.setEnabled(false);
-    	}
+	public int getSettingDone(){
+		return settingDone;
+	}
+
+	public void resetSettingDone(){
+		settingDone = 0;
+	}
+
+    public void disableStartButton(){
+        startButton.setEnabled(false);
+    }
+
+	public void disableSettingButton(){
+		settingButton.setEnabled(false);
+	}
 
 	public void paint(Graphics g0) {
 		Graphics2D g= (Graphics2D)g0;
@@ -124,8 +181,8 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		int x = (e.getX() - 15)/30;
-		int y = (e.getY() - 30)/30;
-        
+		int y = (e.getY() - 30)/30; 
+		System.out.println("X: "+x+" Y: "+y);
 		if (checkValid(x,y) == false || turn == 0 ) { 
 			return ;
 		}
@@ -166,10 +223,10 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	}
 
 	private boolean checkValid(int x, int y){
-		if(x < 0 && x > 18){
+		if(x < 0 || x > 18){
 			return false;
 		}
-		if(y < 0 && y > 18){
+		if(y < 0 || y > 18){
 			return false;
 		}
 		if(board[18 - y][x] != 0){
