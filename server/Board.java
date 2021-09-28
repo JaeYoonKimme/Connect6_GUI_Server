@@ -13,11 +13,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 class Board extends JFrame implements ActionListener, MouseListener{
 	private int[][] board = new int[19][19];
 	private String redStones ; 
 	private int color; 
+	private int port;
 	private volatile int turn;
 	private volatile int count;
 	
@@ -64,15 +67,31 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		JLabel colorLabel = new JLabel("Select Server's Color : ");
 		colorBox = new JComboBox<>(new String[] {"BLACK","WHITE"});
 
-		logTextArea = new JTextArea("*********************** Log History ***********************", 30, 30);
+		logTextArea = new JTextArea("*********************** Log History ***********************\n", 30, 30);
 		logTextArea.setEditable(false);
 		JScrollPane scrollPane = new JScrollPane(logTextArea);
 
 		settingButton = new Button("OPEN SERVER");
 		settingButton.addActionListener(new ActionListener() {
 			public void actionPerformed ( ActionEvent e ) {
-				int port = Integer.parseInt(portField.getText());
-				logTextArea.append("port : " + port);
+				try {
+					port = Integer.parseInt(portField.getText());
+					printLog("Set Port Number : "+port);
+				} catch (NumberFormatException er) {
+					printLog("[ERROR] Wrong Port Number Format");
+					return ;
+				}
+
+				if(((String)colorBox.getSelectedItem()).equals("WHITE")){
+					printLog("Set Server Color : WHITE");
+					color = 1;
+
+				}
+				else {
+					printLog("Set Server Color : BLACK");
+					color = 2;
+				}
+				
 				settingDone = 1;
 			}
 		});
@@ -103,12 +122,27 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		redStoneGenerater();
 	}
 
+	public void printLog(String message){
+		LocalTime now = LocalTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+		logTextArea.append("["+now.format(formatter)+"] "+message+"\n");
+	}
+
     public int getGameStart(){
         return gameStart;
     }
 
 	public int getSettingDone(){
 		return settingDone;
+	}
+
+	public int getPort(){
+		return port;
+	}
+
+	public int getColor(){
+		return color;
 	}
 
 	public void resetSettingDone(){

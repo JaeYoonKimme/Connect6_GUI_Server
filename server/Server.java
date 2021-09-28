@@ -19,21 +19,30 @@ class Server {
 	}
 
 	public void getArgument() {
-			
+		while(true){
+			if(board.getSettingDone() == 1){
+				break;
+			}
+		}
 
+		port = board.getPort();
+		color = board.getColor();
 
+		if(color == 1){
+			clientColor = 2;
+		}
+		else {
+			clientColor = 1;
+		}
 
 		System.out.println("Stone Color : " + color);
 		System.out.println("Port Numver : " + port);
-
-		board.setColor(color);
-
 	}
 
 	public void connect() {
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
-			System.out.println("Connect Client with" + port + " port");
+			board.printLog("Server Opened. Connect Your Client With " + port + " Port");
 
 			socket = serverSocket.accept();
 			socket.setTcpNoDelay(true);
@@ -41,14 +50,16 @@ class Server {
 			inputStream = socket.getInputStream();
 			outputStream = socket.getOutputStream();
 		} catch(SocketTimeoutException e){ /* Timeout occured on a socket read or accept*/
-			System.err.println("Socket Timeout " + e);
+			board.printLog("Socket Timeout " + e);
 		} catch(ConnectException e){ /* An error occurred while attempting to connect a socket */
-			System.err.println("Couldn't get I/O for the connection " + e);
+			board.printLog("[ERROR] Couldn't get I/O for the connection " + e);
 		} catch(SocketException e){ /* TcpNoDelay set error*/
-			System.err.println("Set tcp_nodelay" + e);
+			board.printLog("Set tcp_nodelay" + e);
 		} catch(IOException e){
-			System.err.println("catch" + e);
+			board.printLog("catch" + e);
 		}
+
+		board.printLog("Connected! Click Start Button to begin");
 	}
 
 	public void sendRedStones(){
@@ -77,33 +88,6 @@ class Server {
 		byteArray[1] = (byte)(intValue >> 8);
 		byteArray[0] = (byte)(intValue);
 		return byteArray;
-	}
-
-	public void echo() {
-		try {
-			while(true) {
-				byte[] sizeByteToRecv = new byte[4];
-				inputStream.read(sizeByteToRecv, 0, 4);
-				int sizeToRecv = byteToInt(sizeByteToRecv);
-
-				System.out.println("Got message size : "+sizeToRecv);
-
-				byte[] messageByteToRecv = new byte[sizeToRecv];
-				inputStream.read(messageByteToRecv, 0, sizeToRecv);
-				String message = new String(messageByteToRecv);
-
-				System.out.println("Got message from client : "+message);
-
-				String messageToSend = new String(">" + message);
-				byte[] sizeByteToSend = intToByte(messageToSend.length());
-				outputStream.write(sizeByteToSend);
-			
-				byte[] messageByteToSend = messageToSend.getBytes();
-				outputStream.write(messageByteToSend);	
-			}
-		} catch (IOException e){
-			System.err.println("IOException" + e);
-		}
 	}
 
 	private int[] parseString(String stones){
@@ -159,6 +143,8 @@ class Server {
 			byte[] bytesOfStones = stones.getBytes();
 			outputStream.write(bytesOfStones);
 			board.setCount(0);
+
+			board.printLog("Sent "+stones);
 		} catch (IOException e) {}
 	}
 
@@ -172,6 +158,7 @@ class Server {
 			inputStream.read(stonesByte, 0, sizeOfStones);
 			stones = new String(stonesByte);
 			System.out.println("Recved Stone from Server -> " + stones);
+			board.printLog("Recved : " + stones);
 		} catch (IOException e) {
 			System.err.println("Recv Stone" + e);
 		}
