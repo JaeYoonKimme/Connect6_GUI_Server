@@ -19,19 +19,18 @@ class Server {
 	}
 
 	public void getArgument() {
-		while(true){
-			if(board.getSettingDone() == 1){
-				break;
-			}
-		}
-
 		port = board.getPort();
 		color = board.getColor();
+		
+		board.printLog("Setting Done");
+		board.printLog("PORT : "+port);
 
 		if(color == 1){
 			clientColor = 2;
+			board.printLog("COLOR : WHITE");
 		}
 		else {
+			board.printLog("COLOR : BLACK");
 			clientColor = 1;
 		}
 
@@ -40,9 +39,15 @@ class Server {
 	}
 
 	public void connect() {
+		while(true){
+		    if(board.getGameStart() == 1) 
+			break;
+		}
+		this.getArgument();
+
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
-			board.printLog("Server Opened. Connect Your Client With " + port + " Port");
+			board.printLog("Connect Your AI With " + port + " Port");
 
 			socket = serverSocket.accept();
 			socket.setTcpNoDelay(true);
@@ -59,7 +64,7 @@ class Server {
 			board.printLog("catch" + e);
 		}
 
-		board.printLog("Connected! Click Start Button to begin");
+		board.printLog("Connected!");
 	}
 
 	public void sendRedStones(){
@@ -69,10 +74,17 @@ class Server {
 		try {
 			outputStream.write(intToByte(sizeOfRedStones), 0, 4);
 			outputStream.write(redStones.getBytes(), 0, sizeOfRedStones);
+
+			if(redStones.equals("")){
+				board.printLog("Sent redStones : No redstone selected");
+			}
+			else {
+				board.printLog("Sent RedStones : "+redStones);
+			}
 		} catch (IOException e) {
 			System.err.println("Send redStone" + e);
 		}
-    	}
+    }
 
 	public int byteToInt(byte[] bytes) {
 		return ((bytes[3] & 0xFF) << 24) | 
@@ -187,12 +199,6 @@ class Server {
 	}
 
 	public void start(){
-		while(true){
-		    if(board.getGameStart() == 1) 
-			break;
-		}
-
-        board.disableStartButton();
 
 		System.out.println("STONE");		
 		if(color == 1){ // server is white
@@ -225,7 +231,6 @@ class Server {
 
 	public static void main(String[] args){
 		Server server = new Server();
-		server.getArgument(); 
 		server.connect();		
 		server.sendRedStones();	
 		server.start();

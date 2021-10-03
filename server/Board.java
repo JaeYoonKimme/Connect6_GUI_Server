@@ -20,7 +20,7 @@ import javax.swing.border.TitledBorder;
 
 class Board extends JFrame implements ActionListener, MouseListener{
 	private int[][] board = new int[19][19];
-	private String redStones ; 
+	private String redStones = ""; 
 	private int color; 
 	private int port;
 	private int redStoneCount;
@@ -37,13 +37,12 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	private Button randomButton;
 	private Button settingButton;
 	private JTextArea logTextArea;
-	private JTextField portField;
+	private JComboBox<String> portBox;
 	private JRadioButton whiteBox;
 	private JRadioButton blackBox;
 	private ButtonGroup colorGroup;
 
 	private volatile int gameStart = 0;
-	private volatile int settingDone = 0;
 	private volatile int gameEnd = 0;
 
 	Board(){
@@ -60,9 +59,6 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		setSize(800,600);
 		setTitle("Connect 6");
 
-		ImageIcon img = new ImageIcon("./icon.jpeg");
-	    setIconImage(img.getImage());
-
 		JPanel leftPanel = new JPanel();
 		leftPanel.setBounds(0, 0, 600, 600);
 		
@@ -77,29 +73,32 @@ class Board extends JFrame implements ActionListener, MouseListener{
 
 		JLabel portLabel = new JLabel("PORT");
 		portLabel.setBounds(10, 10, 70, 50);
-		portField = new JTextField("8080");
-		portField.setBounds(80, 20, 50, 30);
+		portBox = new JComboBox<>(new String[] {"8080", "8081", "8082"});
+		portBox.setBounds(80, 20, 85, 30);
 
 		JLabel colorLabel = new JLabel("COLOR");
 		colorLabel.setBounds(10, 55, 70, 50);
-		JRadioButton whiteBox = new JRadioButton("WHITE");
+		whiteBox = new JRadioButton("WHITE");
 		whiteBox.setBounds(80, 60, 100, 20);
-		JRadioButton blackBox = new JRadioButton("BLACK");
+		blackBox = new JRadioButton("BLACK");
 		blackBox.setBounds(80, 80, 100, 20);
 		whiteBox.setSelected(true);
 		colorGroup = new ButtonGroup();
 		colorGroup.add(whiteBox);
 		colorGroup.add(blackBox);
 
-		logTextArea = new JTextArea("******* Log History *******\n");
+		logTextArea = new JTextArea("***********Log History***********\n");
 		logTextArea.setEditable(false);
+		Font logFont = new Font("SansSerif", Font.BOLD, 10);
+		logTextArea.setFont(logFont);
 		JScrollPane scrollPane = new JScrollPane(logTextArea);
 		scrollPane.setBounds(0,0,180,350);
 
 		randomButton = new Button("적돌생성");
 		randomButton.addActionListener(new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
-				//Red Stone random generate
+				redStoneGenerater();
+				repaint();
 			}
 		});
 		randomButton.setBounds(50, 110, 70, 20);
@@ -108,27 +107,16 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		startButton = new Button("START");
 		startButton.addActionListener(new ActionListener() {
 		    public void actionPerformed ( ActionEvent e ) {
-				try {
-					port = Integer.parseInt(portField.getText());
-					printLog("Set Port Number : "+port);
-				} catch (NumberFormatException er) {
-					printLog("[ERROR] Wrong Port Number Format");
-					return ;
-				}
+				port = Integer.parseInt((String)portBox.getSelectedItem());
 
 				if(whiteBox.isSelected() == true){
-					printLog("Set Color : WHITE");
 					color = 1;
 				}
 				else {
-					printLog("Set Color : BLACK");
 					color = 2;
 				}
 
-				settingDone = 1;
-				disableStartButton();
-
-
+				disableButton();
 				gameStart = 1;
 		    }
 		});
@@ -136,11 +124,10 @@ class Board extends JFrame implements ActionListener, MouseListener{
 
 
 		buttonPanel.add(portLabel);
-		buttonPanel.add(portField);
+		buttonPanel.add(portBox);
 		buttonPanel.add(colorLabel);
 		buttonPanel.add(whiteBox);
 		buttonPanel.add(blackBox);
-		buttonPanel.add(settingButton);
 		buttonPanel.add(randomButton);
 		buttonPanel.add(startButton);
 		buttonPanel.setBounds(0, 15, 180, 170);
@@ -171,19 +158,15 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	}
 
 	public void printLog(String message){
-		LocalTime now = LocalTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+		//LocalTime now = LocalTime.now();
+		//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-		logTextArea.append("["+now.format(formatter)+"] "+message+"\n");
+		logTextArea.append(/*"["+now.format(formatter)+"] "+*/message+"\n");
 	}
 
     public int getGameStart(){
         return gameStart;
     }
-
-	public int getSettingDone(){
-		return settingDone;
-	}
 
 	public int getPort(){
 		return port;
@@ -197,18 +180,14 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		return gameEnd;
 	}
 
-	public void resetSettingDone(){
-		settingDone = 0;
-	}
-
-    public void disableStartButton(){
+    public void disableButton(){
         startButton.setEnabled(false);
+		randomButton.setEnabled(false);
+		whiteBox.setEnabled(false);
+		blackBox.setEnabled(false);
+		portBox.setEnabled(false);
     }
-
-	public void disableSettingButton(){
-		settingButton.setEnabled(false);
-	}
-
+	
 	public void paint(Graphics g0) {
 		Graphics2D g= (Graphics2D)g0;
 		super.paint(g);
@@ -271,6 +250,32 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		System.out.println(point[(count) * 2]);
 		System.out.println(point[(count) *2 + 1]);
 	}
+
+	private boolean inBoardRange(int x, int y){
+		if(x>18 || x<0 ||y>18 || y<0){
+			return false;
+		}
+		return true;
+	}
+	private void deleteRedStone(int x , int y){
+		String aRedString="";
+		board[y][x]=0;
+		if(x>7)
+			x +=1;
+		y = 19-y;
+		char alphabet = (char)(65 + x);
+		aRedString +=String.valueOf(alphabet);
+		if(y < 10){
+			aRedString += Integer.toString(0);
+		}
+		aRedString +=  Integer.toString(y);
+
+		redStones = redStones.replaceAll(aRedString+":","");
+		redStones = redStones.replaceAll(":"+aRedString,"");
+		redStones = redStones.replaceAll(aRedString,"");
+		redStoneCount -=1;
+	
+	}
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -278,9 +283,26 @@ class Board extends JFrame implements ActionListener, MouseListener{
 
 		int x = (e.getX() - 15)/30;
 		int y = (e.getY() - 30)/30; 
+	
+		if(!inBoardRange(x,y))
+			return ;
+
+		if(gameStart == 0 && board[y][x]==-1){
+			deleteRedStone(x,y);
+			repaint();
+			return ;
+		}
+
+		else if(gameStart ==0 && redStoneCount<5 && storeRedStones(x,18-y)){
+			redStoneCount +=1;
+			repaint();
+			redStonesString(x,y);
+		}
+
 		if(checkValid(x, 18 - y) == false || gameEnd == 1) {
 			return ;
 		}
+
 		if(gameStart ==0 && redStoneCount<5 && storeRedStones(x,18-y)){
 			redStoneCount +=1;
 			repaint();
@@ -456,12 +478,20 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		return stones;
 	}
 
+	private void resetBoard(){
+		for(int i = 0; i < 19; i++){
+			for(int j = 0; j < 19; j++){
+				board[i][j] = 0;
+				}
+		}
+	}
+
 	private void redStoneGenerater(){
 		int x, y, storedX, storedY;
-		int numberOfRedstones;
-		numberOfRedstones = (int)((Math.random() * 5) + 1);
+		resetBoard();
+		redStoneCount = (int)((Math.random() * 5) + 1);
 		redStones = "";
-		for(int i = 0; i < numberOfRedstones; i++){
+		for(int i = 0; i < redStoneCount; i++){
 			while(true) {
 				x = (int)((Math.random() * 20));
 				if(x != 8) {
