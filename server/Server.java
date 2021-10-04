@@ -14,6 +14,8 @@ class Server {
 	private OutputStream outputStream;
 	private Board board;
 
+	private int recievedFirstBlack = 0;
+
 	Server(){
 		board = new Board();
 	}
@@ -177,11 +179,42 @@ class Server {
 		} catch (IOException e) {
 			System.err.println("Recv Stone" + e);
 		}
-        
-		if(stones.equals("K10")){
-		    board.updateBoard(9, 9, clientColor);
-		    return;
+
+
+		if(stones.length() > 7) {
+			board.printLog("Client break the rules");
+			board.printLog("Single player Server Win!");
+
+			board.setGameEnd(1);
+			board.result = "single player Server Win!";
 		}
+        
+
+		stones = stones.toUpperCase();
+		stones = stones.replace(" ","");
+
+		if(clientColor == 2 && recievedFirstBlack == 0) {
+			if(stones.equals("K10")){
+				board.updateBoard(9, 9, clientColor);
+				recievedFirstBlack = 1;
+				return;
+			}
+
+			/*else{
+				board.printLog("Client break the rules");
+				board.printLog("Single player Server Win!");
+				board.setGameEnd(1);
+				board.result = "Single player Server Win!";
+			}
+			*/
+		}
+	
+		if(board.getGameEnd() == 1){
+			while(true){
+			}
+		}
+
+
 
 		int[] pointArray = parseString(stones);
 
@@ -192,11 +225,21 @@ class Server {
 			board.updateBoard(pointArray[2 * i], pointArray[2 * i + 1], clientColor); 
 		}
 
-		if(board.getGameEnd() == 1){
-			while(true){
-			}
 		}
-	}
+
+	public int sendResult(String result) {
+        try {
+            int sizeOfResult = result.length();
+            outputStream.write(intToByte(sizeOfResult), 0, 4);
+            System.out.println("sizeOfResult : " + sizeOfResult);
+            byte[] bytesOfResult = result.getBytes();
+            outputStream.write(bytesOfResult);
+            board.printLog("Result : " + result);
+            return 0;
+        } catch (IOException e) {
+            return 1;
+        }
+    }
 
 	public void start(){
 

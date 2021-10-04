@@ -44,6 +44,7 @@ class Board extends JFrame implements ActionListener, MouseListener{
 
 	private volatile int gameStart = 0;
 	private volatile int gameEnd = 0;
+	public String result;
 
 	Board(){
 		super();
@@ -182,6 +183,10 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		return gameEnd;
 	}
 
+	public void setGameEnd(int val){
+		gameEnd = val;
+	}
+
     public void disableButton(){
         startButton.setEnabled(false);
 		randomButton.setEnabled(false);
@@ -295,22 +300,20 @@ class Board extends JFrame implements ActionListener, MouseListener{
 			return ;
 		}
 
-		else if(gameStart ==0 && redStoneCount<5 && storeRedStones(x,18-y)){
+		else if(gameStart == 0 && redStoneCount<5 && storeRedStones(x,18-y)){
 			redStoneCount +=1;
 			repaint();
 			redStonesString(x,y);
 		}
 
-		if(checkValid(x, 18 - y) == false || gameEnd == 1) {
+		if(turn == 0 || gameEnd == 1){
 			return ;
 		}
 
-		if(gameStart ==0 && redStoneCount<5 && storeRedStones(x,18-y)){
-			redStoneCount +=1;
-			repaint();
-			redStonesString(x,y);
-		}
-		if (turn == 0) { 
+		if(checkValid(x, 18 - y) == false) {
+			printLog("Client Win! Game end");
+			result = "Client Win! Game end";
+			gameEnd = 1;
 			return ;
 		}
 
@@ -326,7 +329,10 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		repaint();
 		
 		if (checkWin(x, y) == true){
-			printLog("Server Win! Game end");
+			printLog("Single player Win Game end");
+			printLog("Single player Win Game end");
+			gameEnd = 1;
+			return ;
 		}
 	}
 
@@ -348,20 +354,23 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 	}
-
+	
 	private boolean checkValid(int x, int y){
-		if(x < 0 || x > 18){
-			return false;
-		}
-		if(y < 0 || y > 18){
-			return false;
-		}
-		if(board[18 - y][x] != 0){
-			return false;
-		}
-		return true;
-	}
-		
+        if(x < 0 || x > 18){ // BADCOORD
+            printLog("[ERROR] BADCOORD : alphabet is incorrect");
+            return false;
+        }
+        if(y < 0 || y > 18){ // BADCOORD
+            printLog("[ERROR] BADCOORD : number is incorrect");
+            return false;
+        }
+        if(board[18 - y][x] != 0){ // NOTEMPTY
+            printLog("[ERROR] NOTEMPTY : invalid point");
+            return false;
+        }
+        return true;
+    }
+
 	public boolean checkWin(int x, int y){
 		//Check if game is end
 		int isWin[] = new int[4];
@@ -408,7 +417,9 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		}
 
 		if(checkValid(x, y) == false) {
-			System.out.println("Wrong input");
+			gameEnd = 1;
+            printLog("Single player Server WIN! Game end");
+            result = "Single player Server WIN! Game end";
 			return ;
 		}
 
@@ -425,7 +436,9 @@ class Board extends JFrame implements ActionListener, MouseListener{
 			repaint();
     	}
 		if(checkWin(x, 18 - y) == true) {
-			printLog("Client Win! Game end");
+			gameEnd = 1;
+            printLog("Client Win! Game end");
+            result = "Client Win! Game end";
 			return;
 		}
 		if(count == 2) {
