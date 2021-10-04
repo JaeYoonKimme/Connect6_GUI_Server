@@ -162,6 +162,8 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 		logTextArea.append(/*"["+now.format(formatter)+"] "+*/message+"\n");
+		logTextArea.setCaretPosition(logTextArea.getText().length());
+		logTextArea.requestFocus();
 	}
 
     public int getGameStart(){
