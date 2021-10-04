@@ -258,12 +258,6 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		System.out.println(point[(count) *2 + 1]);
 	}
 
-	private boolean inBoardRange(int x, int y){
-		if(x>18 || x<0 ||y>18 || y<0){
-			return false;
-		}
-		return true;
-	}
 	private void deleteRedStone(int x , int y){
 		String aRedString="";
 		board[y][x]=0;
@@ -286,24 +280,22 @@ class Board extends JFrame implements ActionListener, MouseListener{
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
-
 		int x = (e.getX() - 15)/30;
 		int y = (e.getY() - 30)/30; 
 	
-		if(!inBoardRange(x,y))
-			return ;
-
-		if(gameStart == 0 && board[y][x]==-1){
-			deleteRedStone(x,y);
+		if(gameStart == 0){
+			if(x>18 || x<0 ||y>18 || y<0){
+				return;
+			}
+			if(board[y][x] == -1){
+				deleteRedStone(x,y);
+			}
+			else if(redStoneCount < 5 && storeRedStones(x, 18 - y)){
+				redStoneCount += 1;
+				redStonesString(x, y);
+			}
 			repaint();
 			return ;
-		}
-
-		else if(gameStart == 0 && redStoneCount<5 && storeRedStones(x,18-y)){
-			redStoneCount +=1;
-			repaint();
-			redStonesString(x,y);
 		}
 
 		if(turn == 0 || gameEnd == 1){
@@ -311,29 +303,29 @@ class Board extends JFrame implements ActionListener, MouseListener{
 		}
 
 		if(checkValid(x, 18 - y) == false) {
-			printLog("Client Win! Game end");
-			result = "Client Win! Game end";
-			gameEnd = 1;
 			return ;
 		}
 
 		setPoint(x, 18 - y);
 		board[y][x] = color;
 		
-        if( x == 9 && y == 9 ){ // start as black
+		repaint();
+        
+		if (checkWin(x, y) == true){
+			printLog("Single player Win Game end");
+			result = "Single player Win Game end";
+			gameEnd = 1;
+			count = count + 1;
+			return ;
+		}
+
+		if( x == 9 && y == 9 ){ // start as black
            	count = 2;
         }
 		else {
             count = count + 1;
 		}
-		repaint();
-		
-		if (checkWin(x, y) == true){
-			printLog("Single player Win Game end");
-			printLog("Single player Win Game end");
-			gameEnd = 1;
-			return ;
-		}
+
 	}
 
 	@Override
