@@ -218,12 +218,12 @@ class Server {
 			}
 		}
 	
-		/*
+		
 		if(board.getGameEnd() == 1){
 			while(true){
 			}
 		}
-		*/
+		
 
 		int[] pointArrayToSend = parseString(stones);
 		for(int i = 0; i < 2; i++){
