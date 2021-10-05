@@ -32,7 +32,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 	private void logPanelInit(){
 		logPanel = new JPanel();
-		logPanel.setBounds(0, 200, 180, 350);
+		logPanel.setBounds(0, 200, 180, 380);
 		logPanel.setLayout(null);
 
 	}
@@ -42,7 +42,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		Font logFont = new Font("SansSerif", Font.BOLD, 10);
 		logTextArea.setFont(logFont);
 		scrollPane = new JScrollPane(logTextArea);
-		scrollPane.setBounds(0,0,180,350);
+		scrollPane.setBounds(0, 0, 180, 380);
 	}
 	private void buttonActionInit(){	
 		randomButton = new Button("적돌생성");
@@ -117,7 +117,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	}	
 	private void rightPanelInit(){
 		rightPanel = new JPanel();
-		rightPanel.setBounds(600, 0, 200, 600);
+		rightPanel.setBounds(600, 0, 200, 620);
 		rightPanel.setLayout(null);
 	}
 	private void buttonPanelInit(){
