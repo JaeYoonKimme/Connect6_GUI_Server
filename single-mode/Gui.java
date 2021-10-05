@@ -97,7 +97,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		addMouseListener(this);
 		this.add(leftPanel);
 		this.add(rightPanel);
-		setBounds(100,100,800,600);
+		setBounds(100,100,800,620);
 		setVisible(true);
 	
 	}
@@ -164,10 +164,15 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	public void paint(Graphics g0) {
 		Graphics2D g = (Graphics2D)g0;
 		super.paint(g);
-
+		g.setColor(new Color(240,170,40));
+		g.fillRect(5,25,585, 585);
+		g.setStroke(new BasicStroke(2));
+		g.setColor(new Color(0,0,0));
+		g.drawRect(5,25,585, 585);
+		g.setStroke(new BasicStroke(1));
 		for (int i = 1; i < 20 ; i++){
 			String num=String.valueOf(20 - i);
-			g.drawString(num,0, 15 + 30 * (i));
+			g.drawString(num,7, 15 + 30 * (i));
 			
 			char alphabet = '0';
 			if(i < 9){
@@ -182,8 +187,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		
 		for(int i=1; i<19; i++) {
 			for(int j=1; j<19; j++) {
-				g.setColor(new Color(240,170,40));
-				g.fillRect(30*i,30*j+10,30, 30);
+				
 				g.setColor(new Color(0,0,0));
 				g.drawRect(30*i,30*j+10,30, 30);
 			}
@@ -204,7 +208,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 						g.fillOval(j*30+20, i*30+30, 20, 20);}
 				}
 			}
-		}
+		}	
 
 		g.setStroke(new BasicStroke(2));
 		for(int i = 0; i < 2; i++){
@@ -213,7 +217,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 			}
 
 			g.setColor(new Color(0,0,255));
-			g.drawOval(b.point[i * 2] * 30 + 20,(18 - b.point[i * 2 + 1]) * 30 + 30, 20, 20);
+			g.drawOval(b.point[i * 2] * 30 + 35,(18 - b.point[i * 2 + 1]) * 30 + 45, 20, 20);
 
 			if((i==0 &&(b.board[18-b.point[1]][b.point[0]]!= b.board[18-b.point[3]][b.point[2]]) ) ){
 				break;
@@ -225,7 +229,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		int x = (e.getX() - 15)/30;
+		int x = (e.getX() - 15 )/30;
 		int y = (e.getY() - 30)/30; 
 		b.clickEvent(x,y);
 		

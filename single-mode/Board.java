@@ -87,15 +87,18 @@ class Board {
 	
 	private boolean checkValid(int x, int y){
 		if(x < 0 || x > 18){ // BADCOORD
-        		g.printLog("[ERROR] BADCOORD : alphabet is incorrect");
+            		if(turn ==1)
+				g.printLog("[ERROR] BADCOORD : alphabet is incorrect");
         		return false;
         	}
         	if(y < 0 || y > 18){ // BADCOORD
-            		g.printLog("[ERROR] BADCOORD : number is incorrect");
+            		if(turn ==1)
+				g.printLog("[ERROR] BADCOORD : number is incorrect");
             		return false;
         	}
         	if(board[18 - y][x] != 0){ // NOTEMPTY
-        		g.printLog("[ERROR] NOTEMPTY : invalid point");
+            		if(turn ==1)
+				g.printLog("[ERROR] NOTEMPTY : invalid point");
         		return false;
         	}
         	return true;	
@@ -142,29 +145,17 @@ class Board {
 	}
 		
 	public void clickEvent(int x, int y){
-		if(x>18 || x<0 ||y>18 || y<0){
-				return;
-		}
-		if(gameStart == 0){
-			if(board[y][x] == -1){
-				deleteRedStone(x,y);
-			}
-			else if(redStoneCount < 5 && storeRedStones(x, 18 - y)){
-				redStoneCount += 1;
-				redStonesString(x, y);
-			}
-			g.repaint();
+		if(redStoneClickEvent(x, y))
+			return;
+
+		if(checkValid(x, 18 - y) == false || turn == 0 || gameEnd == 1  ){
 			return ;
 		}
-
-		if(checkValid(x, 18 - y) == false || turn == 0 || gameEnd == 1){
-			return ;
+		if(board[9][9]==0 && !(x==9 &&  y==9)){
+			return;	
 		}
-
-
 		setPoint(x, 18 - y);
 		board[y][x] = color;
-		
 		g.repaint();
         
 		if (checkWin(x, y) == true){
@@ -179,6 +170,23 @@ class Board {
 		else 
             		count = count + 1;
 					
+	}
+	private boolean redStoneClickEvent(int x, int y){
+		if(x>18 || x<0 ||y>18 || y<0){
+			return false;
+		}
+		if(gameStart == 0){
+			if(board[y][x] == -1){
+				deleteRedStone(x,y);
+			}
+			else if(redStoneCount < 5 && storeRedStones(x, 18 - y)){
+				redStoneCount += 1;
+				redStonesString(x, y);
+			}
+			g.repaint();
+			return  true ;
+		}	
+		return false;
 	}
 	public void updateBoard(int x, int y, int color){
 		if(gameEnd == 1) {

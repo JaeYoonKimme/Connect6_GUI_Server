@@ -157,6 +157,8 @@ class Server {
 				board.g.repaint();
 				sendResult("WIN");
 			}
+			if(stones.equals("K10"))
+				break;
 		}
 		
 
