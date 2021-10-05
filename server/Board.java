@@ -4,21 +4,8 @@ import java.io.BufferedReader;
 import java.util.Date;
 import java.util.*;
 import java.nio.ByteBuffer;
-import javax.swing.* ;
-import java.awt.Graphics ;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
 
-class Board extends JFrame {
+class Board {
 	Board(){
 		count = 0;
 		redStoneCount = 0;
@@ -38,7 +25,7 @@ class Board extends JFrame {
 	
 	private int[] xd = {0,1,-1,1};
 	private int[] yd = {1,0,1,1};
-	public volatile  int[] point = {-10, -10, -10, -10};
+	public volatile  int[] point = {-1,-1,-1,-1};
 	public volatile int gameStart = 0;
 	private volatile int gameEnd = 0;
 
@@ -184,7 +171,6 @@ class Board extends JFrame {
 			g.printLog("Single player Win Game end");
 			result = "Single player Win Game end";
 			gameEnd = 1;
-			count = count + 1;
 			return ;
 		}
 

@@ -17,64 +17,34 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
-
-
 class Gui extends JFrame implements ActionListener , MouseListener{ 
 
-
-	private Button startButton;
-	private Button randomButton;
-	private Button settingButton;
-	private JTextArea logTextArea;
+	private Button startButton , randomButton, settingButton;
 	private JComboBox<String> portBox;
-	private JRadioButton whiteBox;
-	private JRadioButton blackBox;
+	private JRadioButton whiteBox, blackBox;
 	private ButtonGroup colorGroup;	
-	
+	private JPanel leftPanel, rightPanel, buttonPanel, logPanel;
+	private JLabel portLabel, colorLabel;
+	private JScrollPane scrollPane;
+	private JTextArea logTextArea;
+
 	private Board b;
-	
-	Gui(Board b){
-		super();
-		this.b = b;	
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLayout(null);
-		setTitle("Connect 6");
 
-		JPanel leftPanel = new JPanel();
-		leftPanel.setBounds(0, 0, 600, 600);
-		
-		JPanel rightPanel = new JPanel();
-		rightPanel.setBounds(600, 0, 200, 600);
-		rightPanel.setLayout(null);
+	private void logPanelInit(){
+		logPanel = new JPanel();
+		logPanel.setBounds(0, 200, 180, 350);
+		logPanel.setLayout(null);
 
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setBounds(0, 0, 200, 200);
-		buttonPanel.setLayout(null);
-
-
-		JLabel portLabel = new JLabel("PORT");
-		portLabel.setBounds(10, 10, 70, 50);
-		portBox = new JComboBox<>(new String[] {"8080", "8081", "8082"});
-		portBox.setBounds(80, 20, 85, 30);
-
-		JLabel colorLabel = new JLabel("COLOR");
-		colorLabel.setBounds(10, 55, 70, 50);
-		whiteBox = new JRadioButton("WHITE");
-		whiteBox.setBounds(80, 60, 100, 20);
-		blackBox = new JRadioButton("BLACK");
-		blackBox.setBounds(80, 80, 100, 20);
-		whiteBox.setSelected(true);
-		colorGroup = new ButtonGroup();
-		colorGroup.add(whiteBox);
-		colorGroup.add(blackBox);
-
+	}
+	private void logAreaInit(){	
 		logTextArea = new JTextArea("***********Log History***********\n");
 		logTextArea.setEditable(false);
 		Font logFont = new Font("SansSerif", Font.BOLD, 10);
 		logTextArea.setFont(logFont);
-		JScrollPane scrollPane = new JScrollPane(logTextArea);
+		scrollPane = new JScrollPane(logTextArea);
 		scrollPane.setBounds(0,0,180,350);
-
+	}
+	private void buttonActionInit(){	
 		randomButton = new Button("적돌생성");
 		randomButton.addActionListener(new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
@@ -104,8 +74,34 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		    }
 		});
 		startButton.setBounds(50, 135, 70, 20);
-
-
+	}
+	Gui(Board b){
+		super();
+		this.b = b;	
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLayout(null);
+		setTitle("Connect 6");
+		leftPanelInit();
+		rightPanelInit();
+		buttonPanelInit();		
+		logPanelInit();
+		logAreaInit();
+		settingInit();
+		buttonActionInit();
+		addIntoButtonPanel();
+	
+		rightPanel.add(buttonPanel);
+		logPanel.add(scrollPane);
+		rightPanel.add(buttonPanel);
+		rightPanel.add(logPanel);
+		addMouseListener(this);
+		this.add(leftPanel);
+		this.add(rightPanel);
+		setBounds(100,100,800,600);
+		setVisible(true);
+	
+	}
+	private void addIntoButtonPanel(){
 		buttonPanel.add(portLabel);
 		buttonPanel.add(portBox);
 		buttonPanel.add(colorLabel);
@@ -114,29 +110,40 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		buttonPanel.add(randomButton);
 		buttonPanel.add(startButton);
 		buttonPanel.setBounds(0, 15, 180, 170);
+	}
+	private void leftPanelInit(){
+		leftPanel = new JPanel();
+		leftPanel.setBounds(0, 0, 600, 600);
+	}	
+	private void rightPanelInit(){
+		rightPanel = new JPanel();
+		rightPanel.setBounds(600, 0, 200, 600);
+		rightPanel.setLayout(null);
+	}
+	private void buttonPanelInit(){
+		buttonPanel = new JPanel();
+		buttonPanel.setBounds(0, 0, 200, 200);
+		buttonPanel.setLayout(null);
 		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "SETTING");
 		tb.setTitleColor(Color.black);
 		buttonPanel.setBorder(tb);
-		rightPanel.add(buttonPanel);
 
-
-		JPanel logPanel = new JPanel();
-		logPanel.setBounds(0, 200, 180, 350);
-		logPanel.setLayout(null);
-		logPanel.add(scrollPane);
-
-
-
-		rightPanel.add(buttonPanel);
-		rightPanel.add(logPanel);
-		
-		addMouseListener(this);
-		this.add(leftPanel);
-		this.add(rightPanel);
-		setBounds(100,100,800,600);
-		setVisible(true);
-		
-		
+	}
+	private void settingInit(){
+		portLabel = new JLabel("PORT");
+		portLabel.setBounds(10, 10, 70, 50);
+		portBox = new JComboBox<>(new String[] {"8080", "8081", "8082"});
+		portBox.setBounds(80, 20, 85, 30);
+		colorLabel = new JLabel("COLOR");
+		colorLabel.setBounds(10, 55, 70, 50);
+		whiteBox = new JRadioButton("WHITE");
+		whiteBox.setBounds(80, 60, 100, 20);
+		blackBox = new JRadioButton("BLACK");
+		blackBox.setBounds(80, 80, 100, 20);
+		whiteBox.setSelected(true);
+		colorGroup = new ButtonGroup();
+		colorGroup.add(whiteBox);
+		colorGroup.add(blackBox);
 	
 	}
 	public void printLog(String message){
@@ -201,9 +208,14 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 		g.setStroke(new BasicStroke(2));
 		for(int i = 0; i < 2; i++){
+			if(b.point[0]==b.point[2] && b.point[1] == b.point[3]){
+				break;
+			}
+
 			g.setColor(new Color(0,0,255));
 			g.drawOval(b.point[i * 2] * 30 + 20,(18 - b.point[i * 2 + 1]) * 30 + 30, 20, 20);
-			if(b.point[i * 2] == 9 && b.point[i * 2 + 1] == 9 || b.getCount() == 1){
+
+			if((i==0 &&(b.board[18-b.point[1]][b.point[0]]!= b.board[18-b.point[3]][b.point[2]]) ) ){
 				break;
 			}
 		}
