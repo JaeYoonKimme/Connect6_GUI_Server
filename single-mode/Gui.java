@@ -217,7 +217,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 			}
 
 			g.setColor(new Color(0,0,255));
-			g.drawOval(b.point[i * 2] * 30 + 35,(18 - b.point[i * 2 + 1]) * 30 + 45, 20, 20);
+			g.drawOval(b.point[i * 2] * 30 + 20,(18 - b.point[i * 2 + 1]) * 30 + 30, 20, 20);
 
 			if((i==0 &&(b.board[18-b.point[1]][b.point[0]]!= b.board[18-b.point[3]][b.point[2]]) ) ){
 				break;
