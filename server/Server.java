@@ -14,28 +14,10 @@ class Server {
 	private OutputStream outputStream;
 	private Board board;
 
+	private int recievedFirstBlack = 0;
+
 	Server(){
 		board = new Board();
-	}
-
-	public void getArgument() {
-		port = board.getPort();
-		color = board.getColor();
-		
-		board.printLog("Setting Done");
-		board.printLog("PORT : "+port);
-
-		if(color == 1){
-			clientColor = 2;
-			board.printLog("COLOR : WHITE");
-		}
-		else {
-			board.printLog("COLOR : BLACK");
-			clientColor = 1;
-		}
-
-		System.out.println("Stone Color : " + color);
-		System.out.println("Port Numver : " + port);
 	}
 
 	public void connect() {
@@ -47,25 +29,48 @@ class Server {
 
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
-			board.printLog("Connect Your AI With " + port + " Port");
+			board.g.printLog("Connect Your AI With " + port + " Port");
 
 			socket = serverSocket.accept();
 			socket.setTcpNoDelay(true);
+			socket.setSoTimeout(30000);
 
 			inputStream = socket.getInputStream();
 			outputStream = socket.getOutputStream();
 		} catch(SocketTimeoutException e){ /* Timeout occured on a socket read or accept*/
-			board.printLog("Socket Timeout " + e);
+			board.g.printLog("Socket Timeout " + e);
+			gameEnd();
 		} catch(ConnectException e){ /* An error occurred while attempting to connect a socket */
-			board.printLog("[ERROR] Couldn't get I/O for the connection " + e);
+			board.g.printLog("[ERROR] Couldn't get I/O for the connection " + e);
+			gameEnd();
 		} catch(SocketException e){ /* TcpNoDelay set error*/
-			board.printLog("Set tcp_nodelay" + e);
+			board.g.printLog("Set tcp_nodelay" + e);
+			gameEnd();
 		} catch(IOException e){
-			board.printLog("catch" + e);
+			board.g.printLog("catch" + e);
+			gameEnd();
 		}
 
-		board.printLog("Connected!");
+		board.g.printLog("Connected!");
 	}
+
+	public void getArgument() {
+		port = board.getPort();
+		color = board.getColor();
+		
+		board.g.printLog("Setting Done");
+		board.g.printLog("PORT : "+port);
+
+		if(color == 1){
+			clientColor = 2;
+			board.g.printLog("COLOR : WHITE");
+		}
+		else {
+			board.g.printLog("COLOR : BLACK");
+			clientColor = 1;
+		}
+	}
+
 
 	public void sendRedStones(){
 		String redStones = board.getRedStones();
@@ -76,13 +81,14 @@ class Server {
 			outputStream.write(redStones.getBytes(), 0, sizeOfRedStones);
 
 			if(redStones.equals("")){
-				board.printLog("Sent redStones : No redstone selected");
+				board.g.printLog("Sent redStones : No redstone selected");
 			}
 			else {
-				board.printLog("Sent RedStones : "+redStones);
+				board.g.printLog("Sent RedStones : "+redStones);
 			}
 		} catch (IOException e) {
-			System.err.println("Send redStone" + e);
+			board.g.printLog(""+e);
+			gameEnd();
 		}
     }
 
@@ -104,7 +110,7 @@ class Server {
 
 	private int[] parseString(String stones){
 		int start = 0, end=0;
-		int[] pointArray = new int[4]; //0,1 : firstDol jwapyo   1,2 : secondDol jwapyo
+		int[] pointArray = new int[4];
 		char firstAlphabet='0', secondAlphabet='0';
 		String firstPoint="", secondPoint="";
 		if(stones.equals("K10")){
@@ -138,7 +144,6 @@ class Server {
 		}
 		pointArray[3] = Integer.parseInt(secondPoint.substring(1))-1;
 
-		System.out.println("points of stone: " + pointArray[0]+" "+ pointArray[1]+" "+ pointArray[2]+" "+ pointArray[3]+" ");
 		return pointArray;
 	}
 
@@ -146,21 +151,24 @@ class Server {
 		try {
 			while(board.getCount() != 2) {	
 				if(board.getGameEnd() == 1){
-					while(true){
-					}
+					sendResult("LOSE");
+					//gameEnd();
 				}
 			}
 			String stones = board.stoneGenerator();
-			System.out.println("stone Generator() : " + stones);
 			int sizeOfStones = stones.length();
 			outputStream.write(intToByte(sizeOfStones), 0, 4);
-			System.out.println("sizeOfStones : " + sizeOfStones);
 			byte[] bytesOfStones = stones.getBytes();
 			outputStream.write(bytesOfStones);
 			board.setCount(0);
-
-			board.printLog("Sent "+stones);
-		} catch (IOException e) {}
+			board.g.printLog("Sent "+stones);
+		} catch(SocketException e){ /* TcpNoDelay set error*/
+			board.g.printLog("Disconnected " + e);
+			gameEnd();
+		} catch (IOException e) {
+			board.g.printLog(""+e);
+			gameEnd();
+		}
 	}
 
 	public void recvStones(){
@@ -172,61 +180,111 @@ class Server {
 			byte[] stonesByte = new byte[sizeOfStones];
 			inputStream.read(stonesByte, 0, sizeOfStones);
 			stones = new String(stonesByte);
-			System.out.println("Recved Stone from Server -> " + stones);
-			board.printLog("Recved : " + stones);
+			board.g.printLog("Recieved : " + stones);
+
+		} catch (SocketTimeoutException e) {
+			board.setGameEnd(1);
+			board.g.printLog("[TIMEOUT] Single player Server Win!");
+			//board.result = "Single player Server Win!";
+			//gameEnd();
+			sendResult("LOSE");
+		} catch(SocketException e){ /* TcpNoDelay set error*/
+			board.g.printLog("Disconnected " + e);
+			gameEnd();
 		} catch (IOException e) {
-			System.err.println("Recv Stone" + e);
-		}
-        
-		if(stones.equals("K10")){
-		    board.updateBoard(9, 9, clientColor);
-		    return;
+			board.g.printLog(""+e);
+			gameEnd();
 		}
 
-		int[] pointArray = parseString(stones);
+		stones = stones.toUpperCase();
+		stones = stones.replace(" ","");
 
-		for(int i = 0; i< 4; i++){
-			System.out.println(pointArray[i]);
-		}
-		for(int i = 0; i < 2; i++){
-			board.updateBoard(pointArray[2 * i], pointArray[2 * i + 1], clientColor); 
+		if(stones.length() > 7) {
+			board.g.printLog(stones); //INVALID INPUT
+			board.g.printLog("Single player Server Win!");
+			//gameEnd();
+			sendResult("LOSE");
 		}
 
+		if(clientColor == 2 && recievedFirstBlack == 0) {
+			if(stones.equals("K10")){
+				board.updateBoard(9, 9, clientColor);
+				recievedFirstBlack = 1;
+				return;
+			}
+
+			else{
+				board.g.printLog("First black must send K10");
+				board.g.printLog("Single player Server Win!");
+				//gameEnd();
+				sendResult("LOSE");
+			}
+		}
+	
+		/*
 		if(board.getGameEnd() == 1){
 			while(true){
 			}
 		}
-	}
+		*/
+		
+
+		int[] pointArray = parseString(stones);
+		for(int i = 0; i < 2; i++){
+			board.updateBoard(pointArray[2 * i], pointArray[2 * i + 1], clientColor); 
+		}
+		if(board.getGameEnd() == 1){
+			board.g.repaint();
+			sendResult("WIN");
+		}
+
+}
+
+	public void sendResult(String message) {
+        try {
+            int sizeOfMessage = message.length();
+            outputStream.write(intToByte(sizeOfMessage), 0, 4);
+            byte[] bytesOfMessage= message.getBytes();
+            outputStream.write(bytesOfMessage);
+
+			board.g.printLog("Sent Result Message : " + message);
+        } catch (IOException e) {
+			board.g.printLog("" + e);
+            gameEnd();
+        }
+		gameEnd();
+    }
 
 	public void start(){
-
-		System.out.println("STONE");		
 		if(color == 1){ // server is white
-			System.out.println("SERVER IS WHITE");
 			board.setTurn(0);
-			board.printLog("TURN : CLIENT");
+			board.g.printLog("TURN : CLIENT");
 			recvStones();
 		}
 		else { // server is black
-			System.out.println("SERVER IS BLACK");
-			board.printLog("TURN : SERVER");
+			board.g.printLog("TURN : SERVER");
 			board.setTurn(1);
 			sendStones();
             board.setTurn(0);
-			board.printLog("TURN : CLIENT");
+			board.g.printLog("TURN : CLIENT");
 			recvStones();
 		}
 
 		while(true) {
-			System.out.println("DRAW AND WAIT");
-			board.printLog("TURN : SERVER");
+			board.g.printLog("TURN : SERVER");
 			board.setTurn(1);
 			sendStones();
 			board.setTurn(0);
-			board.printLog("TURN : CLIENT");
+			board.g.printLog("TURN : CLIENT");
 			recvStones();
+		} 
+	}
+
+	private void gameEnd(){
+		board.setGameEnd(1);
+		while(true){
+
 		}
-        
 	}
 
 	public static void main(String[] args){
@@ -234,6 +292,5 @@ class Server {
 		server.connect();		
 		server.sendRedStones();	
 		server.start();
-		//server.echo();
 	}
 }

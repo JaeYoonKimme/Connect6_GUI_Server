@@ -215,7 +215,6 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	public void mouseClicked(MouseEvent e) {
 		int x = (e.getX() - 15)/30;
 		int y = (e.getY() - 30)/30; 
-		System.out.println("X : " +x + "Y : "+y);	
 		b.clickEvent(x,y);
 		
        }

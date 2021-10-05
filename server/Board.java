@@ -33,7 +33,7 @@ class Board extends JFrame {
 	private int redStoneCount;
 	private volatile int turn;
 	private volatile int count;
-	private Gui g;
+	public Gui g;
 	public String result;
 	
 	private int[] xd = {0,1,-1,1};
@@ -155,10 +155,10 @@ class Board extends JFrame {
 	}
 		
 	public void clickEvent(int x, int y){
-		if(gameStart == 0){
-			if(x>18 || x<0 ||y>18 || y<0){
+		if(x>18 || x<0 ||y>18 || y<0){
 				return;
-			}
+		}
+		if(gameStart == 0){
 			if(board[y][x] == -1){
 				deleteRedStone(x,y);
 			}
@@ -201,8 +201,8 @@ class Board extends JFrame {
 
 		if(checkValid(x, y) == false) {
 			gameEnd = 1;
-            		g.printLog("Single player Server WIN! Game end");
-            		result = "Single player Server WIN! Game end";
+            g.printLog("Single player Server WIN! Game end");
+            result = "Single player Server WIN! Game end";
 			return ;
 		}
 
@@ -220,8 +220,8 @@ class Board extends JFrame {
     		}
 		if(checkWin(x, 18 - y) == true) {
 			gameEnd = 1;
-            		g.printLog("Client Win! Game end");
-            		result = "Client Win! Game end";
+            g.printLog("Client Win! Game end");
+            result = "Client Win! Game end";
 			return;
 		}
 		if(count == 2) {
