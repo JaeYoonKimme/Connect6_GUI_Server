@@ -30,8 +30,51 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 	private Board b;
 
-	private int rectSize = 20, boardSize = 400, ovalSize=13, xMargin = 10, yMargin = 0;
-	
+	private void logPanelInit(){
+		logPanel = new JPanel();
+		logPanel.setBounds(0, 200, 180, 350);
+		logPanel.setLayout(null);
+
+	}
+	private void logAreaInit(){	
+		logTextArea = new JTextArea("***********Log History***********\n");
+		logTextArea.setEditable(false);
+		Font logFont = new Font("SansSerif", Font.BOLD, 10);
+		logTextArea.setFont(logFont);
+		scrollPane = new JScrollPane(logTextArea);
+		scrollPane.setBounds(0,0,180,350);
+	}
+	private void buttonActionInit(){	
+		randomButton = new Button("적돌생성");
+		randomButton.addActionListener(new ActionListener() {
+			public void actionPerformed( ActionEvent e ) {
+				b.redStoneGenerater();
+				repaint();
+			}
+		});
+		
+		randomButton.setBounds(50, 110, 70, 20);
+
+
+		startButton = new Button("START");
+		startButton.addActionListener(new ActionListener() {
+		    public void actionPerformed ( ActionEvent e ) {
+			b.port = Integer.parseInt((String)portBox.getSelectedItem());
+
+			if(whiteBox.isSelected() == true){
+				b.color = 1;
+			}
+			else {
+				b.color = 2;
+			}
+
+			disableButton();
+			b.gameStart = 1;	
+
+		    }
+		});
+		startButton.setBounds(50, 135, 70, 20);
+	}
 	Gui(Board b){
 		super();
 		this.b = b;	
@@ -54,76 +97,9 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		addMouseListener(this);
 		this.add(leftPanel);
 		this.add(rightPanel);
-		setBounds(100,100,800,420);
+		setBounds(100,100,800,620);
 		setVisible(true);
 	
-	}
-
-
-	private void logPanelInit(){
-		logPanel = new JPanel();
-		logPanel.setBounds(0, 170, 370, 210);
-		logPanel.setLayout(new GridLayout(1,1));
-		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "LOG HISTORY");
-		tb.setTitleColor(Color.black);
-		logPanel.setBorder(tb);
-	}
-	private void logAreaInit(){
-		logTextArea = new JTextArea();
-		logTextArea.setEditable(false);
-		Font logFont = new Font("SansSerif", Font.BOLD, 10);
-		logTextArea.setFont(logFont);
-		scrollPane = new JScrollPane(logTextArea);
-	}
-	private void buttonActionInit(){	
-		randomButton = new Button("REDSTONE");
-		randomButton.addActionListener(new ActionListener() {
-			public void actionPerformed( ActionEvent e ) {
-                		int redStoneCount = 0; 
-             			String input = JOptionPane.showInputDialog("Enter a number of red stones");
-				if(input == null){
-					return ;
-				}
-				try {
-					redStoneCount = Integer.parseInt(input);
-	
-				} catch (NumberFormatException er) {
-					printLog("[ERROR] Input should be an integer number 1~5");
-						return;
-					}	
-                    		if( redStoneCount < 1 || redStoneCount > 5){	
-					printLog("[ERROR] Input should be an integer number 1~5");	
-					return;
-				}
-					
-             
-				b.redStoneGenerater(redStoneCount);
-				repaint();
-			}	
-	
-		});
-		
-		randomButton.setBounds(20, 110, 60, 20);
-
-
-		startButton = new Button("START");
-		startButton.addActionListener(new ActionListener() {
-		    public void actionPerformed ( ActionEvent e ) {
-			b.port = Integer.parseInt((String)portBox.getSelectedItem());
-
-			if(whiteBox.isSelected() == true){
-				b.color = 1;
-			}
-			else {
-				b.color = 2;
-			}
-
-			disableButton();
-			b.gameStart = 1;	
-
-		    }
-		});
-		startButton.setBounds(100, 110, 60, 20);
 	}
 	private void addIntoButtonPanel(){
 		buttonPanel.add(portLabel);
@@ -133,15 +109,15 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		buttonPanel.add(blackBox);
 		buttonPanel.add(randomButton);
 		buttonPanel.add(startButton);
-		buttonPanel.setBounds(0, 15, 180, 150);
+		buttonPanel.setBounds(0, 15, 180, 170);
 	}
 	private void leftPanelInit(){
 		leftPanel = new JPanel();
-		leftPanel.setBounds(0, 0, 400, 400);
+		leftPanel.setBounds(0, 0, 600, 600);
 	}	
 	private void rightPanelInit(){
 		rightPanel = new JPanel();
-		rightPanel.setBounds(420, 0, 400, 400);
+		rightPanel.setBounds(600, 0, 200, 600);
 		rightPanel.setLayout(null);
 	}
 	private void buttonPanelInit(){
@@ -161,9 +137,9 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		colorLabel = new JLabel("COLOR");
 		colorLabel.setBounds(10, 55, 70, 50);
 		whiteBox = new JRadioButton("WHITE");
-		whiteBox.setBounds(80, 60, 90, 20);
+		whiteBox.setBounds(80, 60, 100, 20);
 		blackBox = new JRadioButton("BLACK");
-		blackBox.setBounds(80, 80, 90, 20);
+		blackBox.setBounds(80, 80, 100, 20);
 		whiteBox.setSelected(true);
 		colorGroup = new ButtonGroup();
 		colorGroup.add(whiteBox);
@@ -171,10 +147,8 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	
 	}
 	public void printLog(String message){
-		LocalTime now = LocalTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-		logTextArea.append("["+now.format(formatter)+"] "+message+"\n");
+		logTextArea.append(/*"["+now.format(formatter)+"] "+*/message+"\n");
 		logTextArea.setCaretPosition(logTextArea.getText().length());
 		logTextArea.requestFocus();
 	}
@@ -187,19 +161,18 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		portBox.setEnabled(false);
     }
 
-	
 	public void paint(Graphics g0) {
 		Graphics2D g = (Graphics2D)g0;
 		super.paint(g);
 		g.setColor(new Color(240,170,40));
-		g.fillRect(5,  5,400, 400);
+		g.fillRect(5,25,585, 585);
 		g.setStroke(new BasicStroke(2));
 		g.setColor(new Color(0,0,0));
-		g.drawRect(5, 5,400, 400);
+		g.drawRect(5,25,585, 585);
 		g.setStroke(new BasicStroke(1));
 		for (int i = 1; i < 20 ; i++){
 			String num=String.valueOf(20 - i);
-			g.drawString(num, xMargin-5   , yMargin + 5  +  rectSize * (i));
+			g.drawString(num,7, 15 + 30 * (i));
 			
 			char alphabet = '0';
 			if(i < 9){
@@ -209,14 +182,14 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 				alphabet = (char)(i+65);
 			}
 			String alphabetString = String.valueOf(alphabet);
-			g.drawString(alphabetString,xMargin - 3 + i*(rectSize), yMargin + boardSize);
+			g.drawString(alphabetString, 30*(i), 600);
 		}
 		
 		for(int i=1; i<19; i++) {
 			for(int j=1; j<19; j++) {
 				
 				g.setColor(new Color(0,0,0));
-				g.drawRect( xMargin + rectSize*i, yMargin + rectSize*j,rectSize,rectSize);
+				g.drawRect(30*i,30*j+10,30, 30);
 			}
 		}
 		for(int i=0; i<19; i++) {
@@ -224,16 +197,15 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 				if(b.board[i][j] != -2 ) {
 					if(b.board[i][j] == 1) {
 						g.setColor(new Color(255,255,255));
-						g.fillOval(j*rectSize+ovalSize + xMargin, i*rectSize+ ovalSize + yMargin, ovalSize, ovalSize);
+						g.fillOval(j*30+20, i*30+30, 20, 20);
 					}
 					else if(b.board[i][j] == -1) {
 						g.setColor(new Color(255,0,0));
-						g.fillOval(j*rectSize+ovalSize + xMargin, i*rectSize+ ovalSize + yMargin, ovalSize, ovalSize);
+						g.fillOval(j*30+20, i*30+30, 20, 20);
 					}
 					else if(b.board[i][j] == 2)  {
 						g.setColor(new Color(0,0,0));
-						g.fillOval(j*rectSize+ovalSize + xMargin, i*rectSize+ ovalSize + yMargin, ovalSize, ovalSize);
-					}
+						g.fillOval(j*30+20, i*30+30, 20, 20);}
 				}
 			}
 		}	
@@ -245,19 +217,20 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 			}
 
 			g.setColor(new Color(0,0,255));
-			g.drawOval(b.point[i * 2] * rectSize + xMargin + ovalSize ,(18 - b.point[i * 2 + 1]) * rectSize + yMargin+ ovalSize, 13, 13);
+			g.drawOval(b.point[i * 2] * 30 + 20,(18 - b.point[i * 2 + 1]) * 30 + 30, 20, 20);
+
 			if((i==0 &&(b.board[18-b.point[1]][b.point[0]]!= b.board[18-b.point[3]][b.point[2]]) ) ){
 				break;
 			}
-		
+		}
 	
-		}	
+		
 	}	
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		int x = (e.getX() - 10 - xMargin )/rectSize;
-		int y = (e.getY() - 10 - yMargin )/rectSize; 
+		int x = (e.getX() - 15 )/30;
+		int y = (e.getY() - 30)/30; 
 		b.clickEvent(x,y);
 		
        }

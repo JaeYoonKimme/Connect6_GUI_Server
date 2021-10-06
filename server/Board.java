@@ -13,7 +13,7 @@ class Board {
 		this.g = gui;
 	
 	}
-	public int[][] board = new int[20][20];
+	public int[][] board = new int[19][19];
 	private String redStones = ""; 
 	public int color; 
 	public int port;
@@ -25,7 +25,7 @@ class Board {
 	
 	private int[] xd = {0,1,-1,1};
 	private int[] yd = {1,0,1,1};
-	public volatile  int[] point = {19,19,19,19};
+	public volatile  int[] point = {-1,-1,-1,-1};
 	public volatile int gameStart = 0;
 	private volatile int gameEnd = 0;
 
@@ -278,10 +278,10 @@ class Board {
 		}
 	}
 
-	public void redStoneGenerater(int redStoneCount){
+	public void redStoneGenerater(){
 		int x, y, storedX, storedY;
 		resetBoard();
-		this.redStoneCount = redStoneCount;
+		redStoneCount = (int)((Math.random() * 5) + 1);
 		redStones = "";
 		for(int i = 0; i < redStoneCount; i++){
 			while(true) {
