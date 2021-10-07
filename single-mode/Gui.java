@@ -30,7 +30,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 	private Board b;
 
-	private int rectSize = 20, boardSize = 400, ovalSize=13, xMargin = 10, yMargin = 20;
+	private int rectSize = 20, boardSize = 400, ovalSize=13, xMargin = 20, yMargin = 30;
 	
 	Gui(Board b){
 		super();
