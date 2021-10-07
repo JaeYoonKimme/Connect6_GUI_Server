@@ -46,8 +46,11 @@ class Server {
 		} catch(SocketException e){ /* TcpNoDelay set error*/
 			board.g.printLog("Set tcp_nodelay" + e);
 			gameEnd();
+		} catch(IllegalArgumentException e){
+			board.g.printLog(""+e);
+			gameEnd();
 		} catch(IOException e){
-			board.g.printLog("catch" + e);
+			board.g.printLog(""+e);
 			gameEnd();
 		}
 

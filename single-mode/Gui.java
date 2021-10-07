@@ -20,7 +20,7 @@ import javax.swing.border.TitledBorder;
 class Gui extends JFrame implements ActionListener , MouseListener{ 
 
 	private Button startButton , randomButton, settingButton;
-	private JComboBox<String> portBox;
+	private JTextField portBox;
 	private JRadioButton whiteBox, blackBox;
 	private ButtonGroup colorGroup;	
 	private JPanel leftPanel, rightPanel, buttonPanel, logPanel;
@@ -54,7 +54,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		addMouseListener(this);
 		this.add(leftPanel);
 		this.add(rightPanel);
-		setBounds(100,100,800,440);
+		setBounds(100,100,810,450);
 		setVisible(true);
 	
 	}
@@ -62,7 +62,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 	private void logPanelInit(){
 		logPanel = new JPanel();
-		logPanel.setBounds(0, 170, 370, 210);
+		logPanel.setBounds(0, 170, 370, 235);
 		logPanel.setLayout(new GridLayout(1,1));
 		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "LOG HISTORY");
 		tb.setTitleColor(Color.black);
@@ -109,7 +109,13 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		startButton = new Button("START");
 		startButton.addActionListener(new ActionListener() {
 		    public void actionPerformed ( ActionEvent e ) {
-			b.port = Integer.parseInt((String)portBox.getSelectedItem());
+
+			try {
+				b.port = Integer.parseInt(portBox.getText());
+			} catch (NumberFormatException er) {
+				printLog("[ERROR] : Invalid Port Number");
+				return ;
+			}
 
 			if(whiteBox.isSelected() == true){
 				b.color = 1;
@@ -137,11 +143,11 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	}
 	private void leftPanelInit(){
 		leftPanel = new JPanel();
-		leftPanel.setBounds(0, 0, 400, 400);
+		leftPanel.setBounds(0, 0, 400, 420);
 	}	
 	private void rightPanelInit(){
 		rightPanel = new JPanel();
-		rightPanel.setBounds(420, 0, 400, 400);
+		rightPanel.setBounds(420, 0, 400, 420);
 		rightPanel.setLayout(null);
 	}
 	private void buttonPanelInit(){
@@ -156,7 +162,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	private void settingInit(){
 		portLabel = new JLabel("PORT");
 		portLabel.setBounds(10, 10, 70, 50);
-		portBox = new JComboBox<>(new String[] {"8080", "8081", "8082"});
+		portBox = new JTextField("");
 		portBox.setBounds(80, 20, 85, 30);
 		colorLabel = new JLabel("COLOR");
 		colorLabel.setBounds(10, 55, 70, 50);
