@@ -30,7 +30,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 	private Board b;
 
-	private int rectSize = 20, boardSize = 400, ovalSize=13, xMargin = 10, yMargin = 0;
+	private int rectSize = 20, boardSize = 400, ovalSize=13, xMargin = 10, yMargin = 20;
 	
 	Gui(Board b){
 		super();
@@ -54,7 +54,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		addMouseListener(this);
 		this.add(leftPanel);
 		this.add(rightPanel);
-		setBounds(100,100,800,420);
+		setBounds(100,100,800,440);
 		setVisible(true);
 	
 	}
@@ -192,10 +192,10 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		Graphics2D g = (Graphics2D)g0;
 		super.paint(g);
 		g.setColor(new Color(240,170,40));
-		g.fillRect(5,  5,400, 400);
+		g.fillRect(xMargin - 5, yMargin+ 5,400, 400);
 		g.setStroke(new BasicStroke(2));
 		g.setColor(new Color(0,0,0));
-		g.drawRect(5, 5,400, 400);
+		g.drawRect(xMargin - 5, yMargin + 5,400, 400);
 		g.setStroke(new BasicStroke(1));
 		for (int i = 1; i < 20 ; i++){
 			String num=String.valueOf(20 - i);
