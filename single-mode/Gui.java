@@ -36,6 +36,8 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		super();
 		this.b = b;	
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		Image icon = Toolkit.getDefaultToolkit().getImage("../icon.png");
+		setIconImage(icon);
 		setLayout(null);
 		setTitle("Connect 6");
 		leftPanelInit();
@@ -79,8 +81,8 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		randomButton = new Button("REDSTONE");
 		randomButton.addActionListener(new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
-                		int redStoneCount = 0; 
-             			String input = JOptionPane.showInputDialog("Enter a number of red stones");
+				int redStoneCount = 0;
+             	String input = JOptionPane.showInputDialog(null,"Enter a number of red stones", "", JOptionPane.INFORMATION_MESSAGE);
 				if(input == null){
 					return ;
 				}
