@@ -17,7 +17,7 @@
         $ mvn -version
         ```
 
-    - If Apache Maven Version information is displayed, you succeess to install Maven! 
+    - If Apache Maven Version information is displayed, you success to install Maven! 
     
         * Examples
     
@@ -41,7 +41,7 @@
                 OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
                 ```
 
-3. Enter following commands for compilation and generation of jar file.
+3. Enter following commands to compile source code and generate a jar file.
 
     ```bash
     $ cd single-mode
@@ -49,7 +49,7 @@
     $ mvn package
     ```
   
-4. Enter a following command for execution.
+4. Enter the following command for execution.
 
     ```bash
     $ java -cp target/CONNSIX-1.0.0.jar Main
