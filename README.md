@@ -41,7 +41,7 @@
                 OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
                 ```
 
-3. Type following commands for compilation and generation of jar file.
+3. Enter following commands for compilation and generation of jar file.
 
     ```bash
     $ cd single-mode
@@ -49,7 +49,7 @@
     $ mvn package
     ```
   
-4. Type a following command for execution.
+4. Enter a following command for execution.
 
     ```bash
     $ java -cp target/CONNSIX-1.0.0.jar Main
