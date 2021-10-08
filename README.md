@@ -33,13 +33,13 @@
     
             + Windows
     
-            ```bash
-            Apache Maven 3.6.3 (cecedd343002696d0abb50b32b541b8a6ba2883f)
-            Maven home: C:\Users\PC\Downloads\apache-maven-3.6.3-bin\apache-maven-3.6.3\bin\..
-            Java version: 11.0.8, vendor: Amazon.com Inc., runtime: C:\Program Files\Amazon Corretto\jdk11.0.8_10
-            Default locale: ko_KR, platform encoding: MS949
-            OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
-            ```
+                ```bash
+                Apache Maven 3.6.3 (cecedd343002696d0abb50b32b541b8a6ba2883f)
+                Maven home: C:\Users\PC\Downloads\apache-maven-3.6.3-bin\apache-maven-3.6.3\bin\..
+                Java version: 11.0.8, vendor: Amazon.com Inc., runtime: C:\Program Files\Amazon Corretto\jdk11.0.8_10
+                Default locale: ko_KR, platform encoding: MS949
+                OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
+                ```
 
 3. Type following commands for compilation and generation of jar file.
 
