@@ -13,9 +13,9 @@
 
     - To check whether Maven is installed well, enter a following command in a terminal
   
-    ```bash
-    $ mvn -version
-    ```
+        ```bash
+        $ mvn -version
+        ```
 
     - If Apache Maven Version information is displayed, you succeess to install Maven! 
     
