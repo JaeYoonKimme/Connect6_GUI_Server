@@ -29,7 +29,7 @@
     Java version: 17, vendor: Homebrew, runtime: /usr/local/Cellar/openjdk/17/libexec/openjdk.jdk/Contents/Home
     Default locale: ko_KR, platform encoding: UTF-8
     OS name: "mac os x", version: "11.5.2", arch: "x86_64", family: "mac"
-    '''
+    ```
     
     - Window
     
