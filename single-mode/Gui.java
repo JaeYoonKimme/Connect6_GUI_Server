@@ -243,10 +243,9 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		try {
 			doc.insertString(doc.getLength(),"["+now.format(formatter)+"] "+message+"\n", logTextStyle);
 		} catch (Exception e){
-			System.out.println("hh");
 		}
 
-		logTextPane.setCaretPosition(logTextPane.getText().length());
+		logTextPane.setCaretPosition(logTextPane.getDocument().getLength());
 		logTextPane.requestFocus();
 	}
 
