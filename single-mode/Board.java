@@ -30,7 +30,9 @@ class Board {
 	private volatile int gameEnd = 0;
 	private int win = 1, notWin = 2, tie =3 ,notTie=4;
 
-
+	public int getGameStart(){
+		return gameStart;
+	}
 	public int getPort(){
 		return port;
 	}
