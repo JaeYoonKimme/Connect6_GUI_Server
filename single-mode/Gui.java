@@ -23,7 +23,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	private JTextField portBox;
 	private JRadioButton whiteBox, blackBox;
 	private ButtonGroup colorGroup;	
-	private JPanel leftPanel, rightPanel, buttonPanel, logPanel;
+	private JPanel leftPanel, rightPanel, settingPanel, portPanel, colorPanel, buttonPanel, logPanel;
 	private JLabel portLabel, colorLabel;
 	private JScrollPane scrollPane;
 	private JTextArea logTextArea;
@@ -42,16 +42,25 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		setTitle("Connect 6");
 		leftPanelInit();
 		rightPanelInit();
-		buttonPanelInit();		
+		settingPanelInit();		
+		portPanelInit();
+		colorPanelInit();	
+		buttonActionInit();
+		buttonPanelInit();
+
 		logPanelInit();
 		logAreaInit();
-		settingInit();
-		buttonActionInit();
-		addIntoButtonPanel();
+		portPanelInit();
+		colorPanelInit();
+
+
+		//addIntoButtonPanel();
 	
-		rightPanel.add(buttonPanel);
+		settingPanel.add(portPanel);
+		settingPanel.add(colorPanel);
+		settingPanel.add(buttonPanel);
+		rightPanel.add(settingPanel);
 		logPanel.add(scrollPane);
-		rightPanel.add(buttonPanel);
 		rightPanel.add(logPanel);
 		addMouseListener(this);
 		this.add(leftPanel);
@@ -61,10 +70,9 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	
 	}
 
-
 	private void logPanelInit(){
 		logPanel = new JPanel();
-		logPanel.setBounds(0, 170, 370, 235);
+		logPanel.setBounds(0, 100, 370, 310);
 		logPanel.setLayout(new GridLayout(1,1));
 		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "LOG HISTORY");
 		tb.setTitleColor(Color.black);
@@ -105,7 +113,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	
 		});
 		
-		randomButton.setBounds(20, 110, 60, 20);
+		randomButton.setBounds(300, 10, 60, 20);
 
 
 		startButton = new Button("START");
@@ -131,8 +139,9 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 		    }
 		});
-		startButton.setBounds(100, 110, 60, 20);
+		startButton.setBounds(300, 50, 60, 20);
 	}
+	/*
 	private void addIntoButtonPanel(){
 		buttonPanel.add(portLabel);
 		buttonPanel.add(portBox);
@@ -141,8 +150,8 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		buttonPanel.add(blackBox);
 		buttonPanel.add(randomButton);
 		buttonPanel.add(startButton);
-		buttonPanel.setBounds(0, 15, 180, 150);
 	}
+	*/
 	private void leftPanelInit(){
 		leftPanel = new JPanel();
 		leftPanel.setBounds(0, 0, 400, 420);
@@ -152,32 +161,65 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		rightPanel.setBounds(420, 0, 400, 420);
 		rightPanel.setLayout(null);
 	}
-	private void buttonPanelInit(){
-		buttonPanel = new JPanel();
-		buttonPanel.setBounds(0, 0, 200, 200);
-		buttonPanel.setLayout(null);
+	private void settingPanelInit(){
+		settingPanel = new JPanel();
+		settingPanel.setBounds(0, 15, 370, 80);
+		settingPanel.setLayout(null);
 		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "SETTING");
 		tb.setTitleColor(Color.black);
-		buttonPanel.setBorder(tb);
-
+		settingPanel.setBorder(tb);
 	}
-	private void settingInit(){
+
+	private void portPanelInit(){
+		portPanel = new JPanel();
+		portPanel.setLayout(null);
+		portPanel.setBounds(10, 20, 110, 50);
+
 		portLabel = new JLabel("PORT");
-		portLabel.setBounds(10, 10, 70, 50);
+		portLabel.setBounds(5, 0, 40, 50);  //10 50
 		portBox = new JTextField("");
-		portBox.setBounds(80, 20, 85, 30);
+		portBox.setBounds(40, 10, 65, 30);
+
+		portPanel.add(portLabel);
+		portPanel.add(portBox);
+	}
+	private void colorPanelInit(){
+		colorPanel = new JPanel();
+		colorPanel.setLayout(null);
+		colorPanel.setBounds(120, 20, 115, 50);
+
+		Font font = new Font("SansSerif", Font.BOLD, 10);
+		
 		colorLabel = new JLabel("COLOR");
-		colorLabel.setBounds(10, 55, 70, 50);
+		colorLabel.setBounds(5, 0, 60, 50);  //140 190 -> 
 		whiteBox = new JRadioButton("WHITE");
-		whiteBox.setBounds(80, 60, 90, 20);
+		whiteBox.setBounds(55, 0, 80, 20);
+		whiteBox.setFont(font);
 		blackBox = new JRadioButton("BLACK");
-		blackBox.setBounds(80, 80, 90, 20);
+		blackBox.setBounds(55, 25, 80, 20);
+		blackBox.setFont(font);
 		whiteBox.setSelected(true);
 		colorGroup = new ButtonGroup();
 		colorGroup.add(whiteBox);
 		colorGroup.add(blackBox);
-	
+
+		colorPanel.add(colorLabel);
+		colorPanel.add(whiteBox);
+		colorPanel.add(blackBox);
 	}
+
+
+	private void buttonPanelInit(){
+		buttonPanel = new JPanel();
+		portPanel.setLayout(null);
+		buttonPanel.setBounds(260, 17, 100, 50);
+		buttonPanel.setLayout(new GridLayout(2,1));
+
+		buttonPanel.add(randomButton);
+		buttonPanel.add(startButton);
+	}
+
+
 	public void printLog(String message){
 		LocalTime now = LocalTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -188,7 +230,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	}
 
 	public void disableButton(){
-        	startButton.setEnabled(false);
+        startButton.setEnabled(false);
 		randomButton.setEnabled(false);
 		whiteBox.setEnabled(false);
 		blackBox.setEnabled(false);
