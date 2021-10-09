@@ -17,49 +17,124 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 class Gui extends JFrame implements ActionListener , MouseListener{ 
 
 	private Button startButton , randomButton, settingButton;
-	private JComboBox<String> portBox;
+	private JTextField portBox;
 	private JRadioButton whiteBox, blackBox;
 	private ButtonGroup colorGroup;	
-	private JPanel leftPanel, rightPanel, buttonPanel, logPanel;
+	private JPanel leftPanel, rightPanel, settingPanel, portPanel, colorPanel, buttonPanel, logPanel;
 	private JLabel portLabel, colorLabel;
 	private JScrollPane scrollPane;
-	private JTextArea logTextArea;
+	private JTextPane logTextPane;
+	private StyledDocument doc;
+	private Style logTextStyle;
 
 	private Board b;
 
+	private int rectSize = 20, boardSize = 400, ovalSize=13, xMargin = 20, yMargin = 30;
+	
+	Gui(Board b){
+		super();
+		this.b = b;	
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		Image icon = Toolkit.getDefaultToolkit().getImage("../icon.png");
+		setIconImage(icon);
+		setLayout(null);
+		setTitle("Connect 6");
+		leftPanelInit();
+		rightPanelInit();
+		settingPanelInit();		
+		portPanelInit();
+		colorPanelInit();	
+		buttonActionInit();
+		buttonPanelInit();
+
+		logPanelInit();
+		logAreaInit();
+		portPanelInit();
+		colorPanelInit();
+
+
+		//addIntoButtonPanel();
+	
+		settingPanel.add(portPanel);
+		settingPanel.add(colorPanel);
+		settingPanel.add(buttonPanel);
+		rightPanel.add(settingPanel);
+		logPanel.add(scrollPane);
+		rightPanel.add(logPanel);
+		addMouseListener(this);
+		this.add(leftPanel);
+		this.add(rightPanel);
+		setBounds(100,100,810,450);
+		setVisible(true);
+	
+	}
+
 	private void logPanelInit(){
 		logPanel = new JPanel();
-		logPanel.setBounds(0, 200, 180, 380);
-		logPanel.setLayout(null);
-
+		logPanel.setBounds(0, 100, 370, 310);
+		logPanel.setLayout(new GridLayout(1,1));
+		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "LOG");
+		tb.setTitleColor(Color.black);
+		logPanel.setBorder(tb);
 	}
-	private void logAreaInit(){	
-		logTextArea = new JTextArea("***********Log History***********\n");
-		logTextArea.setEditable(false);
-		Font logFont = new Font("SansSerif", Font.BOLD, 10);
-		logTextArea.setFont(logFont);
-		scrollPane = new JScrollPane(logTextArea);
-		scrollPane.setBounds(0, 0, 180, 380);
+	private void logAreaInit(){
+		logTextPane = new JTextPane();
+		logTextPane.setEditable(false);
+
+		doc = logTextPane.getStyledDocument();
+		logTextStyle = logTextPane.addStyle("",null);
+
+		Font logFont = new Font("SansSerif", Font.BOLD, 12);
+		logTextPane.setFont(logFont);
+		scrollPane = new JScrollPane(logTextPane);
 	}
 	private void buttonActionInit(){	
-		randomButton = new Button("적돌생성");
+		randomButton = new Button("REDSTONE");
 		randomButton.addActionListener(new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
-				b.redStoneGenerater();
+				int redStoneCount = 0;
+             	String input = JOptionPane.showInputDialog(null,"Enter a number of red stones", "", JOptionPane.INFORMATION_MESSAGE);
+				if(input == null){
+					return ;
+				}
+				try {
+					redStoneCount = Integer.parseInt(input);
+	
+				} catch (NumberFormatException er) {
+					printLog("[ERROR] Input should be an integer number 1~5");
+						return;
+					}	
+                    		if( redStoneCount < 1 || redStoneCount > 5){	
+					printLog("[ERROR] Input should be an integer number 1~5");	
+					return;
+				}
+					
+             
+				b.redStoneGenerater(redStoneCount);
 				repaint();
-			}
+			}	
+	
 		});
 		
-		randomButton.setBounds(50, 110, 70, 20);
+		randomButton.setBounds(300, 10, 60, 20);
 
 
 		startButton = new Button("START");
 		startButton.addActionListener(new ActionListener() {
 		    public void actionPerformed ( ActionEvent e ) {
-			b.port = Integer.parseInt((String)portBox.getSelectedItem());
+
+			try {
+				b.port = Integer.parseInt(portBox.getText());
+			} catch (NumberFormatException er) {
+				printLog("[ERROR] : Invalid Port Number");
+				return ;
+			}
 
 			if(whiteBox.isSelected() == true){
 				b.color = 1;
@@ -73,34 +148,9 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 		    }
 		});
-		startButton.setBounds(50, 135, 70, 20);
+		startButton.setBounds(300, 50, 60, 20);
 	}
-	Gui(Board b){
-		super();
-		this.b = b;	
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLayout(null);
-		setTitle("Connect 6");
-		leftPanelInit();
-		rightPanelInit();
-		buttonPanelInit();		
-		logPanelInit();
-		logAreaInit();
-		settingInit();
-		buttonActionInit();
-		addIntoButtonPanel();
-	
-		rightPanel.add(buttonPanel);
-		logPanel.add(scrollPane);
-		rightPanel.add(buttonPanel);
-		rightPanel.add(logPanel);
-		addMouseListener(this);
-		this.add(leftPanel);
-		this.add(rightPanel);
-		setBounds(100,100,800,620);
-		setVisible(true);
-	
-	}
+	/*
 	private void addIntoButtonPanel(){
 		buttonPanel.add(portLabel);
 		buttonPanel.add(portBox);
@@ -109,70 +159,125 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		buttonPanel.add(blackBox);
 		buttonPanel.add(randomButton);
 		buttonPanel.add(startButton);
-		buttonPanel.setBounds(0, 15, 180, 170);
 	}
+	*/
 	private void leftPanelInit(){
 		leftPanel = new JPanel();
-		leftPanel.setBounds(0, 0, 600, 600);
+		leftPanel.setBounds(0, 0, 400, 420);
 	}	
 	private void rightPanelInit(){
 		rightPanel = new JPanel();
-		rightPanel.setBounds(600, 0, 200, 620);
+		rightPanel.setBounds(420, 0, 400, 420);
 		rightPanel.setLayout(null);
 	}
-	private void buttonPanelInit(){
-		buttonPanel = new JPanel();
-		buttonPanel.setBounds(0, 0, 200, 200);
-		buttonPanel.setLayout(null);
+	private void settingPanelInit(){
+		settingPanel = new JPanel();
+		settingPanel.setBounds(0, 15, 370, 80);
+		settingPanel.setLayout(null);
 		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "SETTING");
 		tb.setTitleColor(Color.black);
-		buttonPanel.setBorder(tb);
-
+		settingPanel.setBorder(tb);
 	}
-	private void settingInit(){
+
+	private void portPanelInit(){
+		portPanel = new JPanel();
+		portPanel.setLayout(null);
+		portPanel.setBounds(10, 20, 110, 50);
+
 		portLabel = new JLabel("PORT");
-		portLabel.setBounds(10, 10, 70, 50);
-		portBox = new JComboBox<>(new String[] {"8080", "8081", "8082"});
-		portBox.setBounds(80, 20, 85, 30);
+		portLabel.setBounds(0, 0, 40, 50);  //10 50
+		portBox = new JTextField("");
+		portBox.setBounds(40, 10, 65, 30);
+
+		portPanel.add(portLabel);
+		portPanel.add(portBox);
+	}
+	private void colorPanelInit(){
+		colorPanel = new JPanel();
+		colorPanel.setLayout(null);
+		colorPanel.setBounds(120, 20, 115, 50);
+
+		Font font = new Font("SansSerif", Font.BOLD, 10);
+		
 		colorLabel = new JLabel("COLOR");
-		colorLabel.setBounds(10, 55, 70, 50);
+		colorLabel.setBounds(0, 0, 60, 50);  //140 190 -> 
 		whiteBox = new JRadioButton("WHITE");
-		whiteBox.setBounds(80, 60, 100, 20);
+		whiteBox.setBounds(55, 0, 80, 20);
+		whiteBox.setFont(font);
 		blackBox = new JRadioButton("BLACK");
-		blackBox.setBounds(80, 80, 100, 20);
+		blackBox.setBounds(55, 25, 80, 20);
+		blackBox.setFont(font);
 		whiteBox.setSelected(true);
 		colorGroup = new ButtonGroup();
 		colorGroup.add(whiteBox);
 		colorGroup.add(blackBox);
-	
-	}
-	public void printLog(String message){
 
-		logTextArea.append(/*"["+now.format(formatter)+"] "+*/message+"\n");
-		logTextArea.setCaretPosition(logTextArea.getText().length());
-		logTextArea.requestFocus();
+		colorPanel.add(colorLabel);
+		colorPanel.add(whiteBox);
+		colorPanel.add(blackBox);
+	}
+
+
+	private void buttonPanelInit(){
+		buttonPanel = new JPanel();
+		portPanel.setLayout(null);
+		buttonPanel.setBounds(260, 17, 100, 50);
+		buttonPanel.setLayout(new GridLayout(2,1));
+
+		buttonPanel.add(randomButton);
+		buttonPanel.add(startButton);
+	}
+
+
+	public void printLog(String message){
+		LocalTime now = LocalTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+		if(message.contains("Win")){
+			StyleConstants.setForeground(logTextStyle, Color.red);
+		}
+		else{
+			StyleConstants.setForeground(logTextStyle, Color.black);
+		}		
+
+		try {
+			doc.insertString(doc.getLength(),"["+now.format(formatter)+"] "+message+"\n", logTextStyle);
+		} catch (Exception e){
+		}
+
+		logTextPane.setCaretPosition(logTextPane.getDocument().getLength());
+		logTextPane.requestFocus();
+	}
+
+	public void printNewLine(int n){
+		try {
+			for (int i = 0; i < n; i++){
+				doc.insertString(doc.getLength(),"\n", logTextStyle);
+			}
+		} catch (Exception e){}
 	}
 
 	public void disableButton(){
-        	startButton.setEnabled(false);
+        startButton.setEnabled(false);
 		randomButton.setEnabled(false);
 		whiteBox.setEnabled(false);
 		blackBox.setEnabled(false);
 		portBox.setEnabled(false);
     }
 
+	
 	public void paint(Graphics g0) {
 		Graphics2D g = (Graphics2D)g0;
 		super.paint(g);
 		g.setColor(new Color(240,170,40));
-		g.fillRect(5,25,585, 585);
+		g.fillRect(xMargin - 5, yMargin+ 5,400, 400);
 		g.setStroke(new BasicStroke(2));
 		g.setColor(new Color(0,0,0));
-		g.drawRect(5,25,585, 585);
+		g.drawRect(xMargin - 5, yMargin + 5,400, 400);
 		g.setStroke(new BasicStroke(1));
 		for (int i = 1; i < 20 ; i++){
 			String num=String.valueOf(20 - i);
-			g.drawString(num,7, 15 + 30 * (i));
+			g.drawString(num, xMargin-5   , yMargin + 5  +  rectSize * (i));
 			
 			char alphabet = '0';
 			if(i < 9){
@@ -182,14 +287,14 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 				alphabet = (char)(i+65);
 			}
 			String alphabetString = String.valueOf(alphabet);
-			g.drawString(alphabetString, 30*(i), 600);
+			g.drawString(alphabetString,xMargin - 3 + i*(rectSize), yMargin + boardSize);
 		}
 		
 		for(int i=1; i<19; i++) {
 			for(int j=1; j<19; j++) {
 				
 				g.setColor(new Color(0,0,0));
-				g.drawRect(30*i,30*j+10,30, 30);
+				g.drawRect( xMargin + rectSize*i, yMargin + rectSize*j,rectSize,rectSize);
 			}
 		}
 		for(int i=0; i<19; i++) {
@@ -197,40 +302,40 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 				if(b.board[i][j] != -2 ) {
 					if(b.board[i][j] == 1) {
 						g.setColor(new Color(255,255,255));
-						g.fillOval(j*30+20, i*30+30, 20, 20);
+						g.fillOval(j*rectSize+ovalSize + xMargin, i*rectSize+ ovalSize + yMargin, ovalSize, ovalSize);
 					}
 					else if(b.board[i][j] == -1) {
 						g.setColor(new Color(255,0,0));
-						g.fillOval(j*30+20, i*30+30, 20, 20);
+						g.fillOval(j*rectSize+ovalSize + xMargin, i*rectSize+ ovalSize + yMargin, ovalSize, ovalSize);
 					}
 					else if(b.board[i][j] == 2)  {
 						g.setColor(new Color(0,0,0));
-						g.fillOval(j*30+20, i*30+30, 20, 20);}
+						g.fillOval(j*rectSize+ovalSize + xMargin, i*rectSize+ ovalSize + yMargin, ovalSize, ovalSize);
+					}
 				}
 			}
 		}	
 
 		g.setStroke(new BasicStroke(2));
 		for(int i = 0; i < 2; i++){
-			if(b.point[0]==b.point[2] && b.point[1] == b.point[3]){
+			if(b.point[0]==-1){
 				break;
 			}
 
 			g.setColor(new Color(0,0,255));
-			g.drawOval(b.point[i * 2] * 30 + 20,(18 - b.point[i * 2 + 1]) * 30 + 30, 20, 20);
-
+			g.drawOval(b.point[i * 2] * rectSize + xMargin + ovalSize ,(18 - b.point[i * 2 + 1]) * rectSize + yMargin+ ovalSize, 13, 13);
 			if((i==0 &&(b.board[18-b.point[1]][b.point[0]]!= b.board[18-b.point[3]][b.point[2]]) ) ){
 				break;
 			}
-		}
-	
 		
+	
+		}	
 	}	
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		int x = (e.getX() - 15 )/30;
-		int y = (e.getY() - 30)/30; 
+		int x = (e.getX() - 10 - xMargin )/rectSize;
+		int y = (e.getY() - 10 - yMargin )/rectSize; 
 		b.clickEvent(x,y);
 		
        }

@@ -1,12 +1,13 @@
 import java.io.*;
 import java.net.*;
+import java.net.Socket;
 import java.io.BufferedReader;
 import java.util.Date;
 import java.util.*;
 import java.nio.ByteBuffer;
 import javax.swing.* ;
 import java.awt.Graphics ;
-
+import java.net.InetAddress;
 class Server {
 	private int color, clientColor, port;
 	private Socket socket;
@@ -29,8 +30,17 @@ class Server {
 
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
-			board.g.printLog("Connect Your AI With " + port + " Port");
-
+			InetAddress ip = InetAddress.getLocalHost();
+			board.g.printLog("Connect your AI");
+			
+			board.g.printLog("IP : " + ip.getHostAddress());
+			board.g.printLog("Port : " + port );  
+			if(board.color == 1){
+				board.g.printLog("AI Color : Black");
+			}
+			else {
+				board.g.printLog("AI Color : White");
+			}	
 			socket = serverSocket.accept();
 			socket.setTcpNoDelay(true);
 			socket.setSoTimeout(30000);
@@ -46,12 +56,16 @@ class Server {
 		} catch(SocketException e){ /* TcpNoDelay set error*/
 			board.g.printLog("Set tcp_nodelay" + e);
 			gameEnd();
+		} catch(IllegalArgumentException e){
+			board.g.printLog(""+e);
+			gameEnd();
 		} catch(IOException e){
-			board.g.printLog("catch" + e);
+			board.g.printLog(""+e);
 			gameEnd();
 		}
 
 		board.g.printLog("Connected!");
+		board.g.printNewLine(1);
 	}
 
 	public void getArgument() {
@@ -59,14 +73,11 @@ class Server {
 		color = board.getColor();
 		
 		board.g.printLog("Setting Done");
-		board.g.printLog("PORT : "+port);
 
 		if(color == 1){
 			clientColor = 2;
-			board.g.printLog("COLOR : WHITE");
 		}
 		else {
-			board.g.printLog("COLOR : BLACK");
 			clientColor = 1;
 		}
 	}
@@ -144,7 +155,7 @@ class Server {
 		stones = stones.replace(" ","");
 
 		if(stones.length() > 7) {
-			board.g.printLog(stones); //INVALID INPUT
+			//board.g.printLog(stones); //INVALID INPUT
 			board.g.printLog("Single player Server Win!");
 			//gameEnd();
 			sendResult("LOSE");
@@ -180,24 +191,41 @@ class Server {
 	public void start(){
 		if(color == 1){ // server is white
 			board.setTurn(0);
-			board.g.printLog("TURN : CLIENT");
+			board.g.printNewLine(1);
+			board.g.printLog("TURN : BLACK");
 			recvStones();
 		}
 		else { // server is black
-			board.g.printLog("TURN : SERVER");
+			board.g.printNewLine(1);
+			board.g.printLog("TURN : BLACK");
 			board.setTurn(1);
 			sendStones();
-            		board.setTurn(0);
-			board.g.printLog("TURN : CLIENT");
+            board.setTurn(0);
+			board.g.printNewLine(1);
+			board.g.printLog("TURN : WHITE");
 			recvStones();
 		}
 
 		while(true) {
-			board.g.printLog("TURN : SERVER");
+			board.g.printNewLine(1);
+			if(board.color == 1){
+				board.g.printLog("TURN : WHITE");
+			}
+			else {
+				board.g.printLog("TURN : BLACK");
+			}
+
 			board.setTurn(1);
 			sendStones();
 			board.setTurn(0);
-			board.g.printLog("TURN : CLIENT");
+			
+			board.g.printNewLine(1);
+			if(board.color == 1){
+				board.g.printLog("TURN : BLACK");
+			}
+			else {
+				board.g.printLog("TURN : WHITE");
+			}
 			recvStones();
 		} 
 	}

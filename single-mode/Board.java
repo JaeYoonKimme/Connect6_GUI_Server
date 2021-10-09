@@ -13,7 +13,7 @@ class Board {
 		this.g = gui;
 	
 	}
-	public int[][] board = new int[19][19];
+	public int[][] board = new int[20][20];
 	private String redStones = ""; 
 	public int color; 
 	public int port;
@@ -25,17 +25,14 @@ class Board {
 	
 	private int[] xd = {0,1,-1,1};
 	private int[] yd = {1,0,1,1};
-	public volatile  int[] point = {-1,-1,-1,-1};
+	public volatile  int[] point = {-1,0,0,0};
 	public volatile int gameStart = 0;
 	private volatile int gameEnd = 0;
+	private int win = 1, notWin = 2, tie =3 ,notTie=4;
 
-
-	
-
-    public int getGameStart(){
-        return gameStart;
-    }
-
+	public int getGameStart(){
+		return gameStart;
+	}
 	public int getPort(){
 		return port;
 	}
@@ -104,17 +101,31 @@ class Board {
         	return true;	
 	}
 		
-	public boolean checkWin(int x, int y){
+	public int checkTie(){
+		for(int i=0; i<19; i++){
+			for(int j=0; j<19; j++){
+				if(board[i][j]==0)
+					return notTie;
+			}
+		}
+		return tie;
+	}
+
+	public int checkWin(int x, int y){
+		if(checkTie()==tie){
+			g.printLog("TieTieTie");  
+			return tie;
+		}
 		//Check if game is end
 		int isWin[] = new int[4];
 		for(int i = 0; i < 4; i++) {
 			isWin[i] = search(xd[i], yd[i], x, y);
-			if(isWin[i] == 6) {
+			if(isWin[i] >= 6) {
 				gameEnd = 1;
-				return true ;
+				return win ;
 			}
 		}
-		return false;
+		return notWin;
 	}
 
 	public int search(int xd, int yd, int x, int y) {
@@ -148,7 +159,7 @@ class Board {
 		if(redStoneClickEvent(x, y))
 			return;
 
-		if(checkValid(x, 18 - y) == false || turn == 0 || gameEnd == 1  ){
+		if(gameEnd == 1|| turn == 0 || checkValid(x, 18 - y) == false   ){
 			return ;
 		}
 		if(board[9][9]==0 && !(x==9 &&  y==9)){
@@ -158,7 +169,7 @@ class Board {
 		board[y][x] = color;
 		g.repaint();
         
-		if (checkWin(x, y) == true){
+		if (checkWin(x, y) == win){
 			g.printLog("Single player Win Game end");
 			result = "Single player Win Game end";
 			gameEnd = 1;
@@ -183,6 +194,9 @@ class Board {
 				redStoneCount += 1;
 				redStonesString(x, y);
 			}
+			else{
+				return false;
+			}
 			g.repaint();
 			return  true ;
 		}	
@@ -195,8 +209,8 @@ class Board {
 
 		if(checkValid(x, y) == false) {
 			gameEnd = 1;
-            g.printLog("Single player Server WIN! Game end");
-            result = "Single player Server WIN! Game end";
+            g.printLog("Single player Server Win! Game end");
+            result = "Single player Server Win! Game end";
 			return ;
 		}
 
@@ -212,7 +226,7 @@ class Board {
 		if(count == 2) {
 			g.repaint();
     		}
-		if(checkWin(x, 18 - y) == true) {
+		if(checkWin(x, 18 - y) == win) {
 			gameEnd = 1;
             g.printLog("Client Win! Game end");
             result = "Client Win! Game end";
@@ -278,10 +292,10 @@ class Board {
 		}
 	}
 
-	public void redStoneGenerater(){
+	public void redStoneGenerater(int redStoneCount){
 		int x, y, storedX, storedY;
 		resetBoard();
-		redStoneCount = (int)((Math.random() * 5) + 1);
+		this.redStoneCount = redStoneCount;
 		redStones = "";
 		for(int i = 0; i < redStoneCount; i++){
 			while(true) {
