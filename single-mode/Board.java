@@ -28,13 +28,8 @@ class Board {
 	public volatile  int[] point = {19,19,19,19};
 	public volatile int gameStart = 0;
 	private volatile int gameEnd = 0;
+	private int win = 1, notWin = 2, tie =3 ,notTie=4;
 
-
-	
-
-    public int getGameStart(){
-        return gameStart;
-    }
 
 	public int getPort(){
 		return port;
@@ -104,17 +99,31 @@ class Board {
         	return true;	
 	}
 		
-	public boolean checkWin(int x, int y){
+	public int checkTie(){
+		for(int i=0; i<19; i++){
+			for(int j=0; j<19; j++){
+				if(board[i][j]==0)
+					return notTie;
+			}
+		}
+		return tie;
+	}
+
+	public int checkWin(int x, int y){
+		if(checkTie()==tie){
+			g.printLog("TieTieTie");  
+			return tie;
+		}
 		//Check if game is end
 		int isWin[] = new int[4];
 		for(int i = 0; i < 4; i++) {
 			isWin[i] = search(xd[i], yd[i], x, y);
 			if(isWin[i] == 6) {
 				gameEnd = 1;
-				return true ;
+				return win ;
 			}
 		}
-		return false;
+		return notWin;
 	}
 
 	public int search(int xd, int yd, int x, int y) {
@@ -158,7 +167,7 @@ class Board {
 		board[y][x] = color;
 		g.repaint();
         
-		if (checkWin(x, y) == true){
+		if (checkWin(x, y) == win){
 			g.printLog("Single player Win Game end");
 			result = "Single player Win Game end";
 			gameEnd = 1;
@@ -212,10 +221,10 @@ class Board {
 		if(count == 2) {
 			g.repaint();
     		}
-		if(checkWin(x, 18 - y) == true) {
+		if(checkWin(x, 18 - y) == win) {
 			gameEnd = 1;
-            g.printLog("Client Win! Game end");
-            result = "Client Win! Game end";
+            		g.printLog("Client Win! Game end");
+            		result = "Client Win! Game end";
 			return;
 		}
 		if(count == 2) {
