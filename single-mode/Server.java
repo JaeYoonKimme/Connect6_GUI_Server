@@ -1,12 +1,13 @@
 import java.io.*;
 import java.net.*;
+import java.net.Socket;
 import java.io.BufferedReader;
 import java.util.Date;
 import java.util.*;
 import java.nio.ByteBuffer;
 import javax.swing.* ;
 import java.awt.Graphics ;
-
+import java.net.InetAddress;
 class Server {
 	private int color, clientColor, port;
 	private Socket socket;
@@ -29,7 +30,8 @@ class Server {
 
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
-			board.g.printLog("Connect Your AI With " + port + " Port");
+			InetAddress ip = InetAddress.getLocalHost();
+			board.g.printLog("Connect Your AI With " + port + " Port"+ " IP: "+ ip.getHostAddress() );  
 
 			socket = serverSocket.accept();
 			socket.setTcpNoDelay(true);
