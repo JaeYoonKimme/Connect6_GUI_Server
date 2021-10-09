@@ -17,6 +17,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 class Gui extends JFrame implements ActionListener , MouseListener{ 
 
 	private Button startButton , randomButton, settingButton;
@@ -26,7 +29,9 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	private JPanel leftPanel, rightPanel, settingPanel, portPanel, colorPanel, buttonPanel, logPanel;
 	private JLabel portLabel, colorLabel;
 	private JScrollPane scrollPane;
-	private JTextArea logTextArea;
+	private JTextPane logTextPane;
+	private StyledDocument doc;
+	private Style logTextStyle;
 
 	private Board b;
 
@@ -74,16 +79,20 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		logPanel = new JPanel();
 		logPanel.setBounds(0, 100, 370, 310);
 		logPanel.setLayout(new GridLayout(1,1));
-		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "LOG HISTORY");
+		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "LOG");
 		tb.setTitleColor(Color.black);
 		logPanel.setBorder(tb);
 	}
 	private void logAreaInit(){
-		logTextArea = new JTextArea();
-		logTextArea.setEditable(false);
-		Font logFont = new Font("SansSerif", Font.BOLD, 10);
-		logTextArea.setFont(logFont);
-		scrollPane = new JScrollPane(logTextArea);
+		logTextPane = new JTextPane();
+		logTextPane.setEditable(false);
+
+		doc = logTextPane.getStyledDocument();
+		logTextStyle = logTextPane.addStyle("",null);
+
+		Font logFont = new Font("SansSerif", Font.BOLD, 12);
+		logTextPane.setFont(logFont);
+		scrollPane = new JScrollPane(logTextPane);
 	}
 	private void buttonActionInit(){	
 		randomButton = new Button("REDSTONE");
@@ -224,9 +233,21 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		LocalTime now = LocalTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-		logTextArea.append("["+now.format(formatter)+"] "+message+"\n");
-		logTextArea.setCaretPosition(logTextArea.getText().length());
-		logTextArea.requestFocus();
+		if(message.contains("Win")){
+			StyleConstants.setForeground(logTextStyle, Color.red);
+		}
+		else{
+			StyleConstants.setForeground(logTextStyle, Color.black);
+		}		
+
+		try {
+			doc.insertString(doc.getLength(),"["+now.format(formatter)+"] "+message+"\n", logTextStyle);
+		} catch (Exception e){
+			System.out.println("hh");
+		}
+
+		logTextPane.setCaretPosition(logTextPane.getText().length());
+		logTextPane.requestFocus();
 	}
 
 	public void disableButton(){
@@ -290,7 +311,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 		g.setStroke(new BasicStroke(2));
 		for(int i = 0; i < 2; i++){
-			if(b.point[0]==b.point[2] && b.point[1] == b.point[3]){
+			if(b.point[0]==-1){
 				break;
 			}
 

@@ -25,7 +25,7 @@ class Board {
 	
 	private int[] xd = {0,1,-1,1};
 	private int[] yd = {1,0,1,1};
-	public volatile  int[] point = {19,19,19,19};
+	public volatile  int[] point = {-1,0,0,0};
 	public volatile int gameStart = 0;
 	private volatile int gameEnd = 0;
 	private int win = 1, notWin = 2, tie =3 ,notTie=4;
@@ -159,7 +159,7 @@ class Board {
 		if(redStoneClickEvent(x, y))
 			return;
 
-		if(checkValid(x, 18 - y) == false || turn == 0 || gameEnd == 1  ){
+		if(gameEnd == 1|| turn == 0 || checkValid(x, 18 - y) == false   ){
 			return ;
 		}
 		if(board[9][9]==0 && !(x==9 &&  y==9)){
@@ -193,6 +193,9 @@ class Board {
 			else if(redStoneCount < 5 && storeRedStones(x, 18 - y)){
 				redStoneCount += 1;
 				redStonesString(x, y);
+			}
+			else{
+				return false;
 			}
 			g.repaint();
 			return  true ;
