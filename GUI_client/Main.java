@@ -20,14 +20,40 @@ public class Main {
 		}
 
 		TcpAgent tcpAgent = new TcpAgent(ip,port);
-	
-		tcpAgent.sendMessage("A10:B12");
-		tcpAgent.sendInt(50001);
-		tcpAgent.sendInt(50002);
-		tcpAgent.sendInt(10);
+		Gui gui = new Gui();
 
-		if((tcpAgent.recvMessage()).equals("start")) {
-			tcpAgent.sendMessage("start");
+		//Send Setting Info
+		gui.waitSetting();
+		tcpAgent.sendMessage(gui.redstone); //RedStone
+		tcpAgent.sendInt(gui.port); //Port
+		tcpAgent.sendInt(gui.port); //Port
+		tcpAgent.sendInt(gui.interval); //Interval
+		
+		//Send Start
+		if (tcpAgent.recvMessage().equals("READY")){
+			gui.waitStart();
+			tcpAgent.sendMessage("START");
 		}
+
+		while(true) {
+			String msg = tcpAgent.recvMessage();
+			int color = 0;
+			if(msg[0].equals("W"))
+				color = 1;
+			else 
+				color = 0;
+
+			if(msg[1].equals("$")){
+				gui.log(color, msg.substring(2));
+			}
+			else {
+				msg = msg.substring(1);
+				gui.stone(color, msg.split(":"));
+			}
+
+		}
+
+
+
 	}
 }
