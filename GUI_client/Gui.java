@@ -18,10 +18,6 @@ import javax.swing.text.StyledDocument;
 
 @SuppressWarnings("serial")
 class Gui extends JFrame implements ActionListener , MouseListener{ 
-	public static void main(String[] args){
-		Gui g = new Gui();
-		while(true);
-	}
 	private Button startButton , randomButton , settingDoneButton;
 	private JTextField blackPortBox, whitePortBox, IntervalBox;
 	private JLabel whiteLabel, blackLabel, timeLabel;
@@ -33,12 +29,13 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	private StyledDocument doc;
 	private Style logTextStyle;
 	private ImageIcon redStoneIcon;
-//	private Board b;
+	public Board b;
 
 	private int rectSize = 20, boardSize = 400, ovalSize=13, xMargin = 20, yMargin = 30;
 	
-	Gui( ){
+	Gui(){
 		super();
+		b =  new Board();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        ImageIcon imageIcon = new ImageIcon(getClass().getResource("/icon.png"));
 //		redStoneIcon = new ImageIcon(getClass().getResource("/redstone.png"));
@@ -73,14 +70,6 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	
 	}
 
-	private void waitSetting(){
-
-	}
-
-	private void waitStart(){
-		
-	}
-
 	private void logPanelInit(){
 		logPanel = new JPanel();
 		logPanel.setBounds(0, 150, 370, 260);
@@ -102,7 +91,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	}
 	private void buttonActionInit(){	
 		randomButton = new Button("REDSTONE");
-/*
+
 	randomButton.addActionListener(new ActionListener() {
 			public void actionPerformed( ActionEvent e ) {
 				int redStoneCount = 0;
@@ -117,7 +106,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 				} catch (NumberFormatException er) {
 					printLog("[ERROR] Input should be an integer number 1~5");
 						return;
-			a	}	
+				}	
                     		if( redStoneCount < 1 || redStoneCount > 5){	
 					printLog("[ERROR] Input should be an integer number 1~5");	
 					return;
@@ -129,15 +118,13 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 			}	
 	
 		});
-*/		
-//		randomButton.setBounds(280, 10, 60, 20);
+		
 
 
 		startButton = new Button("START");
 		
 
 		settingDoneButton =new Button("Setting");
-//		settingDoneButton.setBounds(280,90, 60,20);
 		
 /*		startButton.addActionListener(new ActionListener() {
 		    public void actionPerformed ( ActionEvent e ) {
@@ -318,7 +305,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 			}
 		}
 	}
-/*
+
 	public void drawStones(Graphics2D g , int xMargin, int yMargin){
 		for(int i=0; i<19; i++) {
 			for(int j=0; j<19; j++) {
@@ -340,7 +327,8 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		}	
 
 		g.setStroke(new BasicStroke(2));
-		for(int i = 0; i < 2; i++){
+/*
+	for(int i = 0; i < 2; i++){
 			if(b.point[0]==-1){
 				break;
 			}
@@ -353,8 +341,9 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		
 	
 		}	
+		*/
 	}
-*/
+
 	public void paint(Graphics g0) {
 		Graphics2D g = (Graphics2D)g0;
 		super.paint(g);
@@ -363,7 +352,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		
 		writeCoordinate(g,xMargin, yMargin);
 		drawGrid(g, xMargin,yMargin);	
-//		drawStones(g, xMargin, yMargin);	
+		drawStones(g, xMargin, yMargin);	
 			
 	}	
 
@@ -371,8 +360,8 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	public void mouseClicked(MouseEvent e) {
 		int x = (e.getX() - 10 - xMargin )/rectSize;
 		int y = (e.getY() - 10 - yMargin )/rectSize; 
-//		b.clickEvent(x,y);
-		
+		b.redStoneClickEvent(x,y);
+		repaint();		
        }
 
 	@Override
@@ -388,5 +377,12 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	public void mouseExited(MouseEvent e) {}
 	@Override
 	public void actionPerformed(ActionEvent e) {}
-	
+
+	public void waitSetting(){
+
+	}
+
+	public void waitStart(){
+
+	}
 }

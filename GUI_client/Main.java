@@ -24,10 +24,10 @@ public class Main {
 
 		//Send Setting Info
 		gui.waitSetting();
-		tcpAgent.sendMessage(gui.redstone); //RedStone
-		tcpAgent.sendInt(gui.port); //Port
-		tcpAgent.sendInt(gui.port); //Port
-		tcpAgent.sendInt(gui.interval); //Interval
+		tcpAgent.sendMessage(gui.b.redStones); //RedStone
+		//tcpAgent.sendInt(gui.port); //Port
+		//tcpAgent.sendInt(gui.port); //Port
+		//tcpAgent.sendInt(gui.interval); //Interval
 		
 		//Send Start
 		if (tcpAgent.recvMessage().equals("READY")){
@@ -38,17 +38,17 @@ public class Main {
 		while(true) {
 			String msg = tcpAgent.recvMessage();
 			int color = 0;
-			if(msg[0].equals("W"))
+			if(msg.charAt(0) == 'W')
 				color = 1;
 			else 
 				color = 0;
 
-			if(msg[1].equals("$")){
-				gui.log(color, msg.substring(2));
+			if(msg.charAt(1) == '$'){
+				//gui.log(color, msg.substring(2));
 			}
 			else {
 				msg = msg.substring(1);
-				gui.stone(color, msg.split(":"));
+				//gui.stone(color, msg.split(":"));
 			}
 
 		}
