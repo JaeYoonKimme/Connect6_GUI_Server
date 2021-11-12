@@ -34,6 +34,8 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	private volatile boolean setFlag;
 	private volatile boolean startFlag;
 
+	public int whitePort, blackPort, time;
+
 	private int rectSize = 20, boardSize = 400, ovalSize=13, xMargin = 20, yMargin = 30;
 	
 	Gui(){
@@ -119,7 +121,6 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 					return;
 				}
 					
-             
 				b.redStoneGenerater(redStoneCount);
 				repaint();
 			}	
@@ -134,12 +135,19 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		settingDoneButton.addActionListener(new ActionListener() {
 		    public void actionPerformed ( ActionEvent e ) {
 				setFlag = true;
+				whitePort =	Integer.parseInt(whitePortBox.getText());
+				blackPort = Integer.parseInt(blackPortBox.getText());
+				time = Integer.parseInt(IntervalBox.getText());
+				System.out.println("white port " + whitePort + " : black port " + blackPort + " : Interval " + time);
+				randomButton.setEnabled(false);
+      		settingDoneButton.setEnabled(false);
 		    }
 		});
 
 		startButton.addActionListener(new ActionListener() {
 		    public void actionPerformed ( ActionEvent e ) {
 				startFlag = true;
+      		startButton.setEnabled(false);
 		    }
 		});
 
@@ -253,15 +261,8 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 			}
 		} catch (Exception e){}
 	}
-/*
-	public void disableButton(){
-        startButton.setEnabled(false);
-		randomButton.setEnabled(false);
-		whiteBox.setEnabled(false);
-		blackBox.setEnabled(false);
-		portBox.setEnabled(false);
-    }
-*/
+
+
 	public void writeCoordinate(Graphics2D g, int xMargin, int yMargin){
 		for (int i = 1; i < 20 ; i++){
 			String num=String.valueOf(20 - i);
@@ -350,6 +351,9 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		if(setFlag == true){
+			return;
+		}
 		int x = (e.getX() - 10 - xMargin )/rectSize;
 		int y = (e.getY() - 10 - yMargin )/rectSize; 
 		b.redStoneClickEvent(x,y);
@@ -381,4 +385,6 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 		}
 	}
+
+
 }

@@ -20,7 +20,14 @@ public class Main {
 		}
 
 		Gui gui = new Gui();
-		TcpAgent tcpAgent = new TcpAgent(ip,port);
+		gui.waitSetting();
+		System.out.println("RedStone : " + gui.b.redStones);
+		System.out.println("TimeInterval: " + gui.time);
+
+
+		gui.b.updateBoard(9, 9, 2);
+		gui.repaint();
+/*		TcpAgent tcpAgent = new TcpAgent(ip,port);
 
 
 		//Send Setting Info
@@ -53,7 +60,7 @@ public class Main {
 			}
 
 		}
-
+*/
 
 
 	}

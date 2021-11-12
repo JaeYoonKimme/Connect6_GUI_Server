@@ -1,8 +1,7 @@
 class Board{
 	public int[][] board = new int[20][20];
 	public String redStones = ""; 
-	public int redStoneCount;
-
+	public int redStoneCount;	
 
 	public void updateBoard(int x, int y, int color){
 		board[18 - y][x] = color;
@@ -29,6 +28,8 @@ class Board{
 	}
 
 	public boolean redStoneClickEvent(int x, int y){
+		
+
 		if(x > 18 || x < 0 || y > 18 || y < 0){
 			return false;
 		}
