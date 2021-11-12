@@ -34,6 +34,8 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	private volatile boolean setFlag;
 	private volatile boolean startFlag;
 
+	public int whitePort, blackPort, time;
+
 	private int rectSize = 20, boardSize = 400, ovalSize=13, xMargin = 20, yMargin = 30;
 	
 	Gui(){
@@ -50,17 +52,14 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		rightPanelInit();
 		settingPanelInit();		
 		portPanelInit();
-//		colorPanelInit();	
 		buttonActionInit();
 		buttonPanelInit();
 
 		logPanelInit();
 		logAreaInit();
 		portPanelInit();
-//		colorPanelInit();
 	
 		settingPanel.add(portPanel);
-//		settingPanel.add(colorPanel);
 		settingPanel.add(buttonPanel);
 		rightPanel.add(settingPanel);
 		logPanel.add(scrollPane);
@@ -114,7 +113,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 					printLog("[ERROR] Input should be an integer number 1~5");
 						return;
 				}	
-                    		if( redStoneCount < 1 || redStoneCount > 5){	
+				if( redStoneCount < 1 || redStoneCount > 5){	
 					printLog("[ERROR] Input should be an integer number 1~5");	
 					return;
 				}
@@ -129,17 +128,31 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 
 		startButton = new Button("START");
+		startButton.setEnabled(false);
 		settingDoneButton = new Button("SETTING");
 		
 		settingDoneButton.addActionListener(new ActionListener() {
 		    public void actionPerformed ( ActionEvent e ) {
-				setFlag = true;
+				try { 
+
+					whitePort =	Integer.parseInt(whitePortBox.getText());
+					blackPort = Integer.parseInt(blackPortBox.getText());
+					time = Integer.parseInt(IntervalBox.getText());
+				} catch (NumberFormatException er) {
+					printLog("[ERROR] Invalid Setting Value");
+					return;
+				}
+					setFlag = true;
+					randomButton.setEnabled(false);
+	   	   			settingDoneButton.setEnabled(false);
+					startButton.setEnabled(true);
 		    }
 		});
 
 		startButton.addActionListener(new ActionListener() {
 		    public void actionPerformed ( ActionEvent e ) {
 				startFlag = true;
+				startButton.setEnabled(false);
 		    }
 		});
 
@@ -198,20 +211,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		colorPanel.setLayout(null);
 		colorPanel.setBounds(120, 20, 115, 50);
 
-		Font font = new Font("SansSerif", Font.BOLD, 10);
-		
-//		colorLabel = new JLabel("COLOR");
-//		colorLabel.setBounds(0, 0, 60, 50);   
-//		whiteBox.setFont(font);
-//		blackBox.setFont(font);
-//		whiteBox.setSelected(true);
-//		colorGroup = new ButtonGroup();
-//		colorGroup.add(whiteBox);
-//		colorGroup.add(blackBox);
-
-//		colorPanel.add(colorLabel);
-//		colorPanel.add(whiteBox);
-//		colorPanel.add(blackBox);
+		Font font = new Font("SansSerif", Font.BOLD, 10);	
 	}
 
 
@@ -253,15 +253,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 			}
 		} catch (Exception e){}
 	}
-/*
-	public void disableButton(){
-        startButton.setEnabled(false);
-		randomButton.setEnabled(false);
-		whiteBox.setEnabled(false);
-		blackBox.setEnabled(false);
-		portBox.setEnabled(false);
-    }
-*/
+	
 	public void writeCoordinate(Graphics2D g, int xMargin, int yMargin){
 		for (int i = 1; i < 20 ; i++){
 			String num=String.valueOf(20 - i);

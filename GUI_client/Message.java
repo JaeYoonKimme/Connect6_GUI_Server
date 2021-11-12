@@ -16,5 +16,43 @@ class Message{
 		byteArray[0] = (byte)(intValue);
 		return byteArray;
 	}
+
+	public static int[] parseString(String stones){
+		int start = 0, end=0;
+		int[] pointArray = new int[4];
+		char firstAlphabet='0', secondAlphabet='0';
+		String firstPoint="", secondPoint="";
+		if(stones.equals("K10")){
+			Arrays.fill(pointArray, 9);
+			return pointArray;
+		}
+		for(int i=0; i<stones.length(); i++){
+			if(stones.charAt(i)==':'){
+				end = i;
+				firstPoint = stones.substring(start , end);
+				start = end + 1;
+			}
+		}
+		secondPoint = stones.substring(end+1);
+		firstAlphabet = firstPoint.charAt(0);
+		if(firstAlphabet - 65 > 8){
+			pointArray[0] = firstAlphabet - 66;
+		}
+		else{
+			pointArray[0] = firstAlphabet - 65;
+		}
+		pointArray[1] = Integer.parseInt(firstPoint.substring(1))-1;
+		secondAlphabet = secondPoint.charAt(0);
+		if(secondAlphabet - 65 > 8){
+			pointArray[2] = secondAlphabet - 66;
+		}
+		else{
+			pointArray[2] = secondAlphabet - 65;
+		}
+		pointArray[3] = Integer.parseInt(secondPoint.substring(1))-1;
+
+		return pointArray;
+	}
+
 }
 

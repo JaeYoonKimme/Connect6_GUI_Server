@@ -25,33 +25,39 @@ public class Main {
 
 		//Send Setting Info
 		gui.waitSetting();
+		System.out.println("Setting Done. Send info");
 		tcpAgent.sendMessage(gui.b.redStones); //RedStone
-		tcpAgent.sendInt(50001); //Port
-		tcpAgent.sendInt(50002); //Port
-		tcpAgent.sendInt(10); //Interval
-		
+		tcpAgent.sendInt(gui.blackPort); //Port
+		tcpAgent.sendInt(gui.whitePort); //Port
+		tcpAgent.sendInt(gui.time); //Interval
+			
 		//Send Start
 		if (tcpAgent.recvMessage().equals("READY")){
 			gui.waitStart();
-			tcpAgent.sendMessage("START");
+			System.out.println("Send START message");
+			tcpAgent.sendMessage(new String("START"));
 		}
 
 		while(true) {
 			String msg = tcpAgent.recvMessage();
+			
 			int color = 0;
 			if(msg.charAt(0) == 'W')
 				color = 1;
 			else 
-				color = 0;
+				color = 2;
 
-			if(msg.charAt(1) == '$'){
-				//gui.log(color, msg.substring(2));
+			if(msg.length() > 8){
+				gui.printLog(msg.substring(1));
 			}
 			else {
 				msg = msg.substring(1);
-				//gui.stone(color, msg.split(":"));
+				int[] points = Message.parseString(msg);
+				gui.b.updateBoard(points[0],points[1],color);
+				gui.repaint();
+				gui.b.updateBoard(points[2],points[3],color);
+				gui.repaint();
 			}
-
 		}
 
 
