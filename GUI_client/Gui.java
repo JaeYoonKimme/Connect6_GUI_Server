@@ -31,6 +31,9 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	private ImageIcon redStoneIcon;
 	public Board b;
 
+	private volatile boolean setFlag;
+	private volatile boolean startFlag;
+
 	private int rectSize = 20, boardSize = 400, ovalSize=13, xMargin = 20, yMargin = 30;
 	
 	Gui(){
@@ -67,7 +70,11 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		this.add(rightPanel);
 		setBounds(100,100,810,450);
 		setVisible(true);
-	
+
+
+
+		setFlag = false;
+		startFlag = false;
 	}
 
 	private void logPanelInit(){
@@ -122,35 +129,20 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 
 		startButton = new Button("START");
+		settingDoneButton = new Button("SETTING");
 		
-
-		settingDoneButton =new Button("Setting");
-		
-/*		startButton.addActionListener(new ActionListener() {
+		settingDoneButton.addActionListener(new ActionListener() {
 		    public void actionPerformed ( ActionEvent e ) {
-
-			try {
-				b.port = Integer.parseInt(portBox.getText());
-			} catch (NumberFormatException er) {
-				printLog("[ERROR] : Invalid Port Number");
-				return ;
-			}
-
-			if(whiteBox.isSelected() == true){
-				b.color = 1;
-			}
-			else {
-				b.color = 2;
-			}
-
-			disableButton();
-			b.gameStart = 1;	
-
+				setFlag = true;
 		    }
 		});
 
-*/
-//		startButton.setBounds(280, 50, 60, 20);
+		startButton.addActionListener(new ActionListener() {
+		    public void actionPerformed ( ActionEvent e ) {
+				startFlag = true;
+		    }
+		});
+
 	}
 	
     private void leftPanelInit(){
@@ -379,10 +371,14 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	public void actionPerformed(ActionEvent e) {}
 
 	public void waitSetting(){
-
+		while(setFlag != true) {
+			
+		}
 	}
 
 	public void waitStart(){
+		while(startFlag != true) {
 
+		}
 	}
 }

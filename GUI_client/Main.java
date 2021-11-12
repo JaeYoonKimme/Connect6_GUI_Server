@@ -19,15 +19,16 @@ public class Main {
 			System.err.println("ParseInt Exception(port)");
 		}
 
-		TcpAgent tcpAgent = new TcpAgent(ip,port);
 		Gui gui = new Gui();
+		TcpAgent tcpAgent = new TcpAgent(ip,port);
+
 
 		//Send Setting Info
 		gui.waitSetting();
 		tcpAgent.sendMessage(gui.b.redStones); //RedStone
-		//tcpAgent.sendInt(gui.port); //Port
-		//tcpAgent.sendInt(gui.port); //Port
-		//tcpAgent.sendInt(gui.interval); //Interval
+		tcpAgent.sendInt(50001); //Port
+		tcpAgent.sendInt(50002); //Port
+		tcpAgent.sendInt(10); //Interval
 		
 		//Send Start
 		if (tcpAgent.recvMessage().equals("READY")){
