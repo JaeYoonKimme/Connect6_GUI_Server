@@ -103,7 +103,7 @@ class Gui extends JFrame implements ActionListener , MouseListener {
       TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "TURN");
       tb.setTitleColor(Color.black);
       turnPanel.setBorder(tb);
-      turnLabel = new JLabel("READY");
+      turnLabel = new JLabel("-");
       turnLabel.setFont(new Font("SansSerif",Font.BOLD,35));
       turnPanel.add(turnLabel);
   }
@@ -115,7 +115,7 @@ class Gui extends JFrame implements ActionListener , MouseListener {
 		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "TIMER");
 		tb.setTitleColor(Color.black);
 		timerPanel.setBorder(tb);
-		timerLabel = new JLabel("READY");
+		timerLabel = new JLabel("-");
 		timerLabel.setFont(new Font("SansSerif",Font.BOLD,35));
 		timerCnt = 30;
 		timerPanel.add(timerLabel);
@@ -125,12 +125,13 @@ class Gui extends JFrame implements ActionListener , MouseListener {
         titlePanel = new JPanel();
         titlePanel.setBounds((int )(xLen*0.05),(int)(winY*0.22)  ,(int)(xLen*0.9)  , (int)(winY*0.12));
         titlePanel.setLayout(new GridLayout(3,1));
-        titleLabel = new JLabel("CONNSIX");
-        titleLabel.setFont(new Font("SansSerif",Font.BOLD,20));
-        blackTeamLabel = new JLabel("");
-        blackTeamLabel.setFont(new Font("SansSerif",Font.BOLD,20));
-        whiteTeamLabel = new JLabel("");
-        whiteTeamLabel.setFont(new Font("SansSerif",Font.BOLD,20));
+        titleLabel = new JLabel("BY");
+        titleLabel.setFont(new Font("SansSerif",Font.BOLD,25));
+        blackTeamLabel = new JLabel("CONNSIX");
+        blackTeamLabel.setFont(new Font("SansSerif",Font.BOLD,25));
+        whiteTeamLabel = new JLabel("TEAM EVERUST");
+        whiteTeamLabel.setFont(new Font("SansSerif",Font.BOLD,25));
+		whiteTeamLabel.setForeground(Color.cyan);
         blackTeamLabel.setHorizontalAlignment(JLabel.CENTER);
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
         whiteTeamLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -226,6 +227,7 @@ class Gui extends JFrame implements ActionListener , MouseListener {
                     blackTeamLabel.setText(blackName + " (BLACK)");
                     titleLabel.setText(" VS ");
                     whiteTeamLabel.setText(whiteName + " (WHITE)");
+					whiteTeamLabel.setForeground(Color.black);
 
 					sendButton.setEnabled(true);
 	    			} catch (NumberFormatException er) {
@@ -300,6 +302,42 @@ class Gui extends JFrame implements ActionListener , MouseListener {
 
 		logTextPane.setCaretPosition(logTextPane.getDocument().getLength());
 		logTextPane.requestFocus();
+	}
+	public void printLog(String message, int color){
+		String name = "";
+		if(color == 1)
+			name = whiteName;
+		else 
+			name = blackName;
+
+		LocalTime now = LocalTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+		if(message.contains("Win")){
+			StyleConstants.setForeground(logTextStyle, Color.red);
+		}
+		else{
+			StyleConstants.setForeground(logTextStyle, Color.black);
+		}		
+
+		try {
+			doc.insertString(doc.getLength(),"["+now.format(formatter)+"] "+name + " "+message+"\n", logTextStyle);
+		} catch (Exception e){}
+
+		logTextPane.setCaretPosition(logTextPane.getDocument().getLength());
+		logTextPane.requestFocus();
+	}
+	public void printWinner(int color) {
+		timer.stop();
+		turnLabel.setFont(new Font("SansSerif",Font.BOLD,20));
+		turnLabel.setForeground(Color.red);
+		if (color == 1){
+			StyleConstants.setForeground(logTextStyle, Color.red);
+			turnLabel.setText(whiteName + "(WHITE) WIN!");
+		}
+		else {
+			turnLabel.setText(blackName + "(BLACK) WIN!");
+		}
 	}
 
 	public void printNewLine(int n){

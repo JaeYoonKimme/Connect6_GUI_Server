@@ -44,7 +44,6 @@ public class Main {
 		while(true) {
 			String msg = "";
 			msg = tcpAgent.recvMessage();
-			System.out.println(msg);
 			if(msg.length() < 3){
 				continue;	
 			}
@@ -61,10 +60,15 @@ public class Main {
 			gui.setTurnWait();
 
 			if(msg.length() > 8){
+				gui.printLog(msg.substring(1), color);
+			}
+			else if(msg.contains("WIN")) {
 				gui.printLog(msg.substring(1));
+				gui.printWinner(color);
 			}
 			else {
 				msg = msg.substring(1);
+				gui.printLog(msg, color);
 				int[] points = Message.parseString(msg);
 				gui.b.updateBoard(points[0],points[1], points[2], points[3],color);
 				gui.setTimerCnt(30);
