@@ -1,10 +1,26 @@
 class Board{
-	public int[][] board = new int[20][20];
-	public String redStones = ""; 
-	public int redStoneCount;	
+	public int[][] board;
+	public String redStones;
+	public int redStoneCount;
+	public int[] lastStone;
+	
 
-	public void updateBoard(int x, int y, int color){
-		board[18 - y][x] = color;
+	Board() {
+		board = new int[20][20];
+		redStones = new String("");
+		redStoneCount = 0;
+		lastStone = new int[4] ;
+		lastStone[0] = -500;
+		lastStone[1] = -500;
+	}
+	
+	public void updateBoard(int x1, int y1, int x2, int y2, int color){
+		board[18 - y1][x1] = color;
+		board[18-y2][x2] = color;
+		lastStone[0] = x1;
+		lastStone[1] = y1;
+		lastStone[2] = x2;
+		lastStone[3] = y2;
 	}
 
 	private void deleteRedStone(int x , int y){
@@ -27,9 +43,9 @@ class Board{
 
 	}
 
-	public boolean redStoneClickEvent(int x, int y){
-		
 
+
+	public boolean redStoneClickEvent(int x, int y){
 		if(x > 18 || x < 0 || y > 18 || y < 0){
 			return false;
 		}

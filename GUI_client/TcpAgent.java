@@ -28,6 +28,7 @@ class TcpAgent {
 			System.err.println("[connect] " + e);
 			System.exit(1);
 		}
+		System.out.println("Connected!");
     }
 
     public void sendMessage(String msg) {

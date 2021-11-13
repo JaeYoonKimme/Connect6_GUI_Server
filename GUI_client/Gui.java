@@ -1,4 +1,3 @@
-
 import javax.swing.* ;
 import java.awt.Graphics ;
 import java.awt.*;
@@ -16,12 +15,8 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-@SuppressWarnings("serial")
-class Gui extends JFrame implements ActionListener , MouseListener{ 
-	private Button startButton , randomButton , settingDoneButton;
-	private JTextField blackPortBox, whitePortBox, IntervalBox;
-	private JLabel whiteLabel, blackLabel, timeLabel;
-	private ButtonGroup colorGroup;	
+class Gui extends JFrame implements ActionListener , MouseListener { 
+	public Button startButton , randomButton , settingButton, sendButton;
 	private JPanel leftPanel, rightPanel, settingPanel, portPanel, colorPanel, buttonPanel, logPanel;
 	private JLabel portLabel, colorLabel;
 	private JScrollPane scrollPane;
@@ -30,17 +25,33 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	private Style logTextStyle;
 	private ImageIcon redStoneIcon;
 	public Board b;
+	private timerThread t;
+
+
+	private String whiteName, blackName;
+	private JPanel timerPanel, whitePanel, blackPanel;
+  	private Timer timer;
+  	private int timerCnt;
+  	private JLabel timerLabel, turnLabel;
+
+	private JPanel titlePanel;
+	private JLabel titleLabel, blackTeamLabel, whiteTeamLabel;
+
 
 	private volatile boolean setFlag;
 	private volatile boolean startFlag;
 
 	public int whitePort, blackPort, time;
 
-	private int rectSize = 20, boardSize = 400, ovalSize=13, xMargin = 20, yMargin = 30;
-	
+	private int  boardSize = 680,  rectSize = boardSize/20 , ovalSize=(int)(rectSize*0.65), xMargin = 20, yMargin = 20, winX=960, winY = 720;
+
+	private int turn;
+	private JPanel turnPanel;
+
 	Gui(){
 		super();
 		b =  new Board();
+		t = new timerThread(this);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        ImageIcon imageIcon = new ImageIcon(getClass().getResource("/icon.png"));
 //		redStoneIcon = new ImageIcon(getClass().getResource("/redstone.png"));
@@ -48,45 +59,94 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 //		setIconImage(icon);
 		setLayout(null);
 		setTitle("CONNSIX");
+
 		leftPanelInit();
 		rightPanelInit();
-		settingPanelInit();		
-		portPanelInit();
-//		colorPanelInit();	
+
 		buttonActionInit();
 		buttonPanelInit();
+		sendButton.setEnabled(false);
+		startButton.setEnabled(false);
 
 		logPanelInit();
 		logAreaInit();
-		portPanelInit();
-//		colorPanelInit();
-	
-		settingPanel.add(portPanel);
-//		settingPanel.add(colorPanel);
-		settingPanel.add(buttonPanel);
-		rightPanel.add(settingPanel);
+		settingPanelInit();		
+		timerPanelInit();
+		turnPanelInit();
+
+		titlePanelInit();
+		rightPanel.add(titlePanel);
+
+
 		logPanel.add(scrollPane);
 		rightPanel.add(logPanel);
+		rightPanel.add(buttonPanel);
 		addMouseListener(this);
+		rightPanel.add(turnPanel);
+		rightPanel.add(timerPanel);
+		
 		this.add(leftPanel);
 		this.add(rightPanel);
-		setBounds(100,100,810,450);
+		setBounds(50,50,winX,winY);
 		setVisible(true);
-
-
 
 		setFlag = false;
 		startFlag = false;
+		//startTimer();
 	}
 
+	
+	private void turnPanelInit(){
+      int xLen = (int)(winX - (xMargin + boardSize));
+      turnPanel = new JPanel();
+      turnPanel.setBounds((int )(xLen*0.05),(int)(winY*0.4)  ,(int)(xLen*0.9)  , (int)(winY*0.12));
+      TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "TURN");
+      tb.setTitleColor(Color.black);
+      turnPanel.setBorder(tb);
+      turnLabel = new JLabel("READY");
+      turnLabel.setFont(new Font("SansSerif",Font.BOLD,35));
+      turnPanel.add(turnLabel);
+  }
+
+	private void timerPanelInit(){
+		int xLen = (int)(winX - (xMargin + boardSize));
+		timerPanel = new JPanel();
+		timerPanel.setBounds((int )(xLen*0.05),(int)(winY*0.05)  ,(int)(xLen*0.9)  , (int)(winY*0.12));
+		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "TIMER");
+		tb.setTitleColor(Color.black);
+		timerPanel.setBorder(tb);
+		timerLabel = new JLabel("READY");
+		timerLabel.setFont(new Font("SansSerif",Font.BOLD,35));
+		timerCnt = 30;
+		timerPanel.add(timerLabel);
+     }
+	  private void titlePanelInit(){
+        int xLen = (int)(winX - (xMargin + boardSize));
+        titlePanel = new JPanel();
+        titlePanel.setBounds((int )(xLen*0.05),(int)(winY*0.22)  ,(int)(xLen*0.9)  , (int)(winY*0.12));
+        titlePanel.setLayout(new GridLayout(3,1));
+        titleLabel = new JLabel("CONNSIX");
+        titleLabel.setFont(new Font("SansSerif",Font.BOLD,20));
+        blackTeamLabel = new JLabel("");
+        blackTeamLabel.setFont(new Font("SansSerif",Font.BOLD,20));
+        whiteTeamLabel = new JLabel("");
+        whiteTeamLabel.setFont(new Font("SansSerif",Font.BOLD,20));
+        blackTeamLabel.setHorizontalAlignment(JLabel.CENTER);
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+        whiteTeamLabel.setHorizontalAlignment(JLabel.CENTER);
+        titlePanel.add(blackTeamLabel);
+        titlePanel.add(titleLabel);
+        titlePanel.add(whiteTeamLabel);
+    }
 	private void logPanelInit(){
 		logPanel = new JPanel();
-		logPanel.setBounds(0, 150, 370, 260);
+		logPanel.setBounds(0,(int)( winY*0.7), (int)(winX-(boardSize+xMargin)), (int)(winY*0.25));
 		logPanel.setLayout(new GridLayout(1,1));
 		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "LOG");
 		tb.setTitleColor(Color.black);
 		logPanel.setBorder(tb);
 	}
+
 	private void logAreaInit(){
 		logTextPane = new JTextPane();
 		logTextPane.setEditable(false);
@@ -99,138 +159,126 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		scrollPane = new JScrollPane(logTextPane);
 	}
 	private void buttonActionInit(){	
+		int xlen = (int)(winX-(xMargin+boardSize));
+		int ylen =100; 
 		randomButton = new Button("REDSTONE");
-
-	randomButton.addActionListener(new ActionListener() {
-			public void actionPerformed( ActionEvent e ) {
+		randomButton.setBounds((int)(xlen*0.08) , (int)(ylen*0.20) , (int)(xlen*0.35),30);
+		randomButton.addActionListener(new ActionListener() {
+	    		public void actionPerformed( ActionEvent e ) {
 				int redStoneCount = 0;
 				Object[] options = {"1", "2", "3", "4", "5"};
-             	String input = (String)JOptionPane.showInputDialog(null,"Select a number of red stones","",JOptionPane.INFORMATION_MESSAGE,redStoneIcon,options, options[0]);
+				String input = (String)JOptionPane.showInputDialog(null,"Select a number of red stones","",JOptionPane.INFORMATION_MESSAGE,redStoneIcon,options, options[0]);
+
 				if(input == null){
-					return ;
+		    			return ;
 				}
 				try {
-					redStoneCount = Integer.parseInt(input);
-	
+		    			redStoneCount = Integer.parseInt(input);
 				} catch (NumberFormatException er) {
-					printLog("[ERROR] Input should be an integer number 1~5");
-						return;
-				}	
-                    		if( redStoneCount < 1 || redStoneCount > 5){	
-					printLog("[ERROR] Input should be an integer number 1~5");	
+		    			printLog("[ERROR] Input should be an integer number 1~5");
 					return;
-				}
-					
+				}                    
 				b.redStoneGenerater(redStoneCount);
 				repaint();
-			}	
-	
+	    		}   
 		});
-		
-
 
 		startButton = new Button("START");
-		settingDoneButton = new Button("SETTING");
-		
-		settingDoneButton.addActionListener(new ActionListener() {
-		    public void actionPerformed ( ActionEvent e ) {
-				setFlag = true;
-				whitePort =	Integer.parseInt(whitePortBox.getText());
-				blackPort = Integer.parseInt(blackPortBox.getText());
-				time = Integer.parseInt(IntervalBox.getText());
-				System.out.println("white port " + whitePort + " : black port " + blackPort + " : Interval " + time);
-				randomButton.setEnabled(false);
-      		settingDoneButton.setEnabled(false);
-		    }
-		});
-
+		startButton.setBounds((int)(xlen*0.58),(int)(ylen*0.20)  ,(int)(xlen*0.35),30);
+		startButton.setEnabled(false);
 		startButton.addActionListener(new ActionListener() {
-		    public void actionPerformed ( ActionEvent e ) {
-				startFlag = true;
-      		startButton.setEnabled(false);
-		    }
+				public void actionPerformed (ActionEvent e) {
+					startFlag = true;
+					startButton.setEnabled(false);
+					t.start();
+				}
+				
 		});
+		
+		settingButton = new Button("SETTING");
+		settingButton.setBounds((int)(xlen*0.08) ,(int) (ylen*0.6) , (int)(xlen*0.35),30);
+	        settingButton.addActionListener(new ActionListener() {
+			public void actionPerformed ( ActionEvent e ) {
+							JTextField blackNameField = new JTextField("Black");
+                    JTextField whiteNameField = new JTextField("White");
+                    JTextField whiteField = new JTextField("8082");
+                    JTextField blackField = new JTextField("8081");
+                    JTextField timeField = new JTextField("10");
+                    Object[] message = {
+                    "BLACK TEAM NAME", blackNameField,
+                    "BLACK PORT", blackField,
+                    "WHITE TEAM NAME", whiteNameField,
+                    "WHITE PORT", whiteField,
+                    "TIME INTERVAL", timeField,
+			};
+        	        int option = JOptionPane.showConfirmDialog(null, message, "Options", JOptionPane.OK_CANCEL_OPTION);
+       			if (option == JOptionPane.OK_OPTION){
+	    			try {
+					whitePort = Integer.parseInt(whiteField.getText());
+                    blackPort = Integer.parseInt(blackField.getText());
+                    time = Integer.parseInt(timeField.getText());
+                    whiteName = whiteNameField.getText();
+                    blackName = blackNameField.getText();
+                    printLog("[SETTING]");
+                    printLog("White Port : " + whitePort);
+                    printLog("Black Port : " + blackPort);
+                    printLog("Time Interval : " + time);
+                    blackTeamLabel.setText(blackName + " (BLACK)");
+                    titleLabel.setText(" VS ");
+                    whiteTeamLabel.setText(whiteName + " (WHITE)");
 
+					sendButton.setEnabled(true);
+	    			} catch (NumberFormatException er) {
+					printLog("[ERROR] Invalid Setting Value");
+					return;
+	    			}
+	 		}
+			repaint();
+            }
+        });
+
+		sendButton = new Button("READY");
+		sendButton.setBounds((int)(xlen*0.58) , (int)(ylen*0.6) , (int)(xlen*0.35),30);
+		sendButton.addActionListener(new ActionListener() {
+	    		public void actionPerformed ( ActionEvent e ) {
+	    			setFlag = true;
+	    			randomButton.setEnabled(false);
+	    			sendButton.setEnabled(false);
+	    			settingButton.setEnabled(false);
+	    		}
+		});
 	}
 	
-    private void leftPanelInit(){
+   private void leftPanelInit(){
 		leftPanel = new JPanel();
-		leftPanel.setBounds(0, 0, 400, 420);
+		leftPanel.setBounds(0, 0, xMargin+boardSize, winY);
 	}	
 	private void rightPanelInit(){
 		rightPanel = new JPanel();
-		rightPanel.setBounds(420, 0, 400, 420);
+		rightPanel.setBounds(xMargin+boardSize, 0, winX-(xMargin+ boardSize), winY);
 		rightPanel.setLayout(null);
 	}
 	private void settingPanelInit(){
 		settingPanel = new JPanel();
-		settingPanel.setBounds(0, 15, 370, 130);
+		settingPanel.setBounds(0, (int)(winY*0.5), winX-(xMargin+boardSize), 100 );
 		settingPanel.setLayout(null);
 		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "SETTING");
 		tb.setTitleColor(Color.black);
 		settingPanel.setBorder(tb);
 	}
 
-	private void portPanelInit(){
-		int size =25;
-		int xmargin = 10;
-		portPanel = new JPanel();
-		portPanel.setLayout(null);
-		portPanel.setBounds(10, 20, 180, 100);
-		
-		whiteLabel = new JLabel("WHITE Port");
-		whiteLabel.setBounds(xmargin, 0 , size*3 + 15, size);
-		whitePortBox = new JTextField("");
-		whitePortBox.setBounds(xmargin+ size*3 + 15, 0 , size*2+ 15, size);
-
-		blackLabel = new JLabel("BLACK Port");
-		blackLabel.setBounds(xmargin, size+ 5, size*3+ 15, size);
-		blackPortBox = new JTextField("");
-		blackPortBox.setBounds(xmargin+ size*3 +15 , size + 5, size*2 + 15 , size);
-
-		
-		timeLabel = new JLabel("Time");
-		timeLabel.setBounds(xmargin, size*2 + 10, size*2+ 15, size);
-		IntervalBox = new JTextField("");
-		IntervalBox.setBounds(xmargin+ size*3 + 15, size*2 + 10 , size*2+ 15, size);
-		
-		portPanel.add(timeLabel);
-		portPanel.add(IntervalBox);
-		portPanel.add(whiteLabel);
-		portPanel.add(blackLabel);
-		portPanel.add(blackPortBox);
-		portPanel.add(whitePortBox);
-	}
-	private void colorPanelInit(){
-		colorPanel = new JPanel();
-		colorPanel.setLayout(null);
-		colorPanel.setBounds(120, 20, 115, 50);
-
-		Font font = new Font("SansSerif", Font.BOLD, 10);
-		
-//		colorLabel = new JLabel("COLOR");
-//		colorLabel.setBounds(0, 0, 60, 50);   
-//		whiteBox.setFont(font);
-//		blackBox.setFont(font);
-//		whiteBox.setSelected(true);
-//		colorGroup = new ButtonGroup();
-//		colorGroup.add(whiteBox);
-//		colorGroup.add(blackBox);
-
-//		colorPanel.add(colorLabel);
-//		colorPanel.add(whiteBox);
-//		colorPanel.add(blackBox);
-	}
-
-
 	private void buttonPanelInit(){
 		buttonPanel = new JPanel();
-		portPanel.setLayout(null);
-		buttonPanel.setBounds(230, 17, 100, 90);
-		buttonPanel.setLayout(new GridLayout(3,1));
+		buttonPanel.setBounds(0, (int)(winY*0.55), winX- (xMargin+boardSize),  100  );
+		buttonPanel.setLayout(null);
 		
+		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "SETTING");
+		tb.setTitleColor(Color.black);
+		buttonPanel.setBorder(tb);
+
 		buttonPanel.add(randomButton);
-		buttonPanel.add(settingDoneButton);
+		buttonPanel.add(settingButton);
+		buttonPanel.add(sendButton);
 		buttonPanel.add(startButton);
 	}
 
@@ -261,8 +309,7 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 			}
 		} catch (Exception e){}
 	}
-
-
+	
 	public void writeCoordinate(Graphics2D g, int xMargin, int yMargin){
 		for (int i = 1; i < 20 ; i++){
 			String num=String.valueOf(20 - i);
@@ -284,21 +331,21 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 	}
 	public void entireBoard(Graphics2D g , int xMargin, int yMargin){
 		g.setColor(new Color(240,170,40));
-		g.fillRect(xMargin - 5, yMargin+ 5,400, 400);
+		g.fillRect(xMargin -5, yMargin + 5,boardSize, boardSize);
 		g.setStroke(new BasicStroke(2));
 		g.setColor(new Color(0,0,0));
-		g.drawRect(xMargin - 5, yMargin + 5,400, 400);
+		g.drawRect(xMargin-5 , yMargin +5,boardSize, boardSize);
 
 	}
 	public void drawGrid(Graphics2D g , int xMargin, int yMargin){
 		for(int i=1; i<19; i++) {
 			for(int j=1; j<19; j++) {
 				g.setColor(new Color(0,0,0));
-				g.drawRect( xMargin + rectSize*i, yMargin + rectSize*j,rectSize,rectSize);
+			g.drawRect( xMargin + rectSize*i , yMargin + rectSize*j  ,rectSize,rectSize);
 			}
 		}
 	}
-
+	
 	public void drawStones(Graphics2D g , int xMargin, int yMargin){
 		for(int i=0; i<19; i++) {
 			for(int j=0; j<19; j++) {
@@ -320,21 +367,13 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		}	
 
 		g.setStroke(new BasicStroke(2));
-/*
-	for(int i = 0; i < 2; i++){
-			if(b.point[0]==-1){
+		g.setColor(new Color(0,0,255));
+		for(int i = 0; i < 2; i++){
+			if(b.lastStone[0]==-500){
 				break;
 			}
-
-			g.setColor(new Color(0,0,255));
-			g.drawOval(b.point[i * 2] * rectSize + xMargin + ovalSize ,(18 - b.point[i * 2 + 1]) * rectSize + yMargin+ ovalSize, 13, 13);
-			if((i==0 &&(b.board[18-b.point[1]][b.point[0]]!= b.board[18-b.point[3]][b.point[2]]) ) ){
-				break;
-			}
-		
-	
-		}	
-		*/
+			g.drawOval(b.lastStone[i * 2] * rectSize + xMargin + ovalSize ,(18 - b.lastStone[i * 2 + 1]) * rectSize + yMargin+ ovalSize, ovalSize, ovalSize);
+		}
 	}
 
 	public void paint(Graphics g0) {
@@ -351,12 +390,12 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(setFlag == true){
+		if(startFlag == true)
 			return;
-		}
-		int x = (e.getX() - 10 - xMargin )/rectSize;
-		int y = (e.getY() - 10 - yMargin )/rectSize; 
-		b.redStoneClickEvent(x,y);
+		int x = (e.getX() - (rectSize/2) - xMargin )/rectSize;
+		int y = (e.getY() - (rectSize/2) - yMargin )/rectSize; 
+		if(!b.redStoneClickEvent(x,y))
+			return;
 		repaint();		
        }
 
@@ -386,5 +425,30 @@ class Gui extends JFrame implements ActionListener , MouseListener{
 		}
 	}
 
+	public void setTurn (int color) {
+		this.turn = color;
+	}
 
+	public void setTimerCnt(int n){
+		timerCnt = n;
+	}
+
+	public void setTurnWait(){
+			if ( turn == 2 ) 
+				turnLabel.setText("WHITE");
+			else
+				turnLabel.setText("BLACK") ;
+	}
+	public void startTimer(){
+   	ActionListener actListener = new ActionListener() {
+     		public void actionPerformed(ActionEvent event){
+      		if(timerCnt != 0){
+        			timerCnt -= 1;
+      		}
+      		timerLabel.setText("" + timerCnt);
+	  		}
+   	};
+   	timer = new Timer(1000, actListener);
+   	timer.start();
+  	}
 }
