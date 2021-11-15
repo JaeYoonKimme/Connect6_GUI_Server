@@ -43,7 +43,7 @@ class Gui extends JFrame implements ActionListener , MouseListener {
 
 	public int whitePort, blackPort, time;
 
-	private int  boardSize = 680,  rectSize = boardSize/20 , ovalSize=(int)(rectSize*0.65), xMargin = 20, yMargin = 20, winX=960, winY = 720;
+	private int  boardSize = 680,  rectSize = boardSize/20 , ovalSize=(int)(rectSize*0.65), xMargin = 20, yMargin = 25, winX=960, winY = 720;
 
 	private int turn;
 	private JPanel turnPanel;
@@ -94,12 +94,11 @@ class Gui extends JFrame implements ActionListener , MouseListener {
 		startFlag = false;
 		//startTimer();
 	}
-
 	
 	private void turnPanelInit(){
       int xLen = (int)(winX - (xMargin + boardSize));
       turnPanel = new JPanel();
-      turnPanel.setBounds((int )(xLen*0.05),(int)(winY*0.4)  ,(int)(xLen*0.9)  , (int)(winY*0.12));
+      turnPanel.setBounds(0,(int)(winY*0.4)  , winX-(xMargin+boardSize)  , (int)(winY*0.12));
       TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "TURN");
       tb.setTitleColor(Color.black);
       turnPanel.setBorder(tb);
@@ -111,7 +110,7 @@ class Gui extends JFrame implements ActionListener , MouseListener {
 	private void timerPanelInit(){
 		int xLen = (int)(winX - (xMargin + boardSize));
 		timerPanel = new JPanel();
-		timerPanel.setBounds((int )(xLen*0.05),(int)(winY*0.05)  ,(int)(xLen*0.9)  , (int)(winY*0.12));
+		timerPanel.setBounds(0,(int)(winY*0.22)  , winX-(xMargin+boardSize)  , (int)(winY*0.12));
 		TitledBorder tb = new TitledBorder(new LineBorder(Color.black), "TIMER");
 		tb.setTitleColor(Color.black);
 		timerPanel.setBorder(tb);
@@ -123,7 +122,7 @@ class Gui extends JFrame implements ActionListener , MouseListener {
 	  private void titlePanelInit(){
         int xLen = (int)(winX - (xMargin + boardSize));
         titlePanel = new JPanel();
-        titlePanel.setBounds((int )(xLen*0.05),(int)(winY*0.22)  ,(int)(xLen*0.9)  , (int)(winY*0.12));
+        titlePanel.setBounds(0,(int)(winY*0.05)  , winX-(xMargin+boardSize)  , (int)(winY*0.12));
         titlePanel.setLayout(new GridLayout(3,1));
         titleLabel = new JLabel("BY");
         titleLabel.setFont(new Font("SansSerif",Font.BOLD,25));
