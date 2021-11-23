@@ -75,12 +75,17 @@ class Board{
 		redStones = "";
 		for(int i = 0; i < redStoneCount; i++){
 			while(true) {
-				x = (int)((Math.random() * 20));
+				if(i == 0){
+					x = (int)((Math.random() * 6) + 7);
+					y = (int)((Math.random() * 5) + 8);
+				} else {
+					x = (int)((Math.random() * 20));
+					y = (int)((Math.random() * 19) + 1);
+				}
 				if(x != 8) {
 					break;
 				}
 			}
-			y = (int)((Math.random() * 19) + 1);
 			char alphabet = (char)(65 + x);
 			if (x > 8) {
 				storedX = x-1;
