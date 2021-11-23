@@ -66,6 +66,10 @@ public class Main {
 				gui.printLog(msg.substring(1));
 				gui.printWinner(color);
 			}
+			else if(msg.contains("TIE")) {
+				gui.printLog(msg.substring(1));
+				gui.printWinner(-1);
+			}
 			else {
 				msg = msg.substring(1);
 				gui.printLog(msg, color);

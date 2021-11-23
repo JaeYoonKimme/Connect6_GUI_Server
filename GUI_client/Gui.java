@@ -334,8 +334,11 @@ class Gui extends JFrame implements ActionListener , MouseListener {
 			StyleConstants.setForeground(logTextStyle, Color.red);
 			turnLabel.setText(whiteName + "(WHITE) WIN!");
 		}
-		else {
+		else if(color == 2){
 			turnLabel.setText(blackName + "(BLACK) WIN!");
+		}
+		else {
+			turnLabel.setText("TIE");
 		}
 	}
 
